@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.shuxin.mapper.ruleengine.RuleJTYYMapper">
+
+	<select id="selectSecondLineDrugInfo" resultType="java.util.HashMap">
+		select d.drug_code,
+		       j.EXYPBMZ,
+		       j.SYZXD,
+		       j.XDDZLXM,
+		       j.YXYPBMZ,
+		       to_number(j.CXLSTS) CXLSTS,
+		       j.YFXDYPJLZTS,
+		       j.WFXDYPJLZTS,
+		       j.SFCSPJL,
+		       j.CYXYYLSJLSFBHDT,
+		       j.CBLXBM,
+		       j.CSPJLSFCSGYZHYTKSC
+		  from t_step_drug_mapping d, t_jtyy j
+		 where j.exypbmz = d.drug_group
+		   and d.drug_code in
+		   <foreach item="claimDetail" index="index" collection="list" open="(" separator="," close=")">  
+                #{claimDetail.productCode}
+           </foreach>
+	</select>
+
+</mapper>

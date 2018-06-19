@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.shuxin.mapper.ruleengine.RuleMGBZYDFYZESHMapper">
+
+<select id="selectSpecialMultipleDiseasesInfo" resultType="java.util.HashMap">
+
+select t.xdsjqjlx,t.xdje,t.tsxx,t.yxdje,t.ytsxx from t_mgbzydfyzesh t 
+where t.xdsjqjlx=#{aiagnosisCodeCount}
+
+</select>
+
+<select id="selectDiagnosisCodeByPatIdCard" resultType="string">
+	select zdbm from t_tb_mghzdj_jb where sfzhm =#{patIdCard}
+</select>
+
+</mapper>

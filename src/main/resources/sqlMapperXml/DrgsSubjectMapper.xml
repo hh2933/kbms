@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.shuxin.mapper.DrgsSubjectMapper" >
+ <resultMap id="DrgsSubjectResultMap" type="java.util.Map">
+    
+       <result column="id" property="id" jdbcType="VARCHAR"/>
+        <result column="bzxh" property="bzxh" jdbcType="VARCHAR"/>
+        <result column="bzmc" property="bzmc" jdbcType="VARCHAR"/>
+        <result column="xmlb" property="xmlb" jdbcType="VARCHAR"/>
+        <result column="xmbm" property="xmbm" jdbcType="VARCHAR"/>
+        <result column="xmmc" property="xmmc" jdbcType="VARCHAR"/>
+          <result column="ypxdyl" property="ypxdyl" jdbcType="VARCHAR"/>
+          <result column="xdcs" property="xdcs" jdbcType="VARCHAR"/>
+          
+ </resultMap>
+ <select id="drgsSubjectDataGrid" resultMap="DrgsSubjectResultMap"    >
+ 
+       select t.id,t.bzxh,t.bzmc,t.xmlb,t.xmbm,t.xmmc,t.ypxdyl,t.xdcs  from T_BZSFXMXXB t
+         <where>
+            <if test=" bzxh!= null and bzxh!= '' ">
+                        t.bzxh =#{bzxh}
+            </if>   
+           
+           
+        </where>
+  </select> 
+
+
+  
+</mapper>

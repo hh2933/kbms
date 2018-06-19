@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.shuxin.mapper.ruleengine.RuleXDYYLXJBMapper">
+	
+	<select id="selectIndicationCode" resultType="java.util.HashMap">
+		select to_char(t.ypbm) xmbm,t.pdyj,t.yylx,t.tsxx,t.yyjb,t.yyjbpdlx,t.shyjly,t.sfshmz,t.sfshzy,t.zdcblxyxtg,t.ypmc,t.bzxx
+		 from T_XDYYLXJB t where to_char(t.ypbm) in
+		<foreach item="claimDetail" index="index" collection="list" open="(" separator="," close=")">  
+                #{claimDetail.productCode}
+         </foreach>
+	</select>
+
+</mapper>

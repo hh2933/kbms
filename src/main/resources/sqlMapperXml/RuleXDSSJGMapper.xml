@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.shuxin.mapper.ruleengine.RuleXDSSJGMapper">
+	
+	<select id="selectIndicationCode" resultType="java.util.HashMap">
+		select to_char(t.xmbm) xmbm,t.fzxh,t.d2xssybj,t.tsxx,t.xmmc,t.xmfz,t.dw
+		 from T_XDSSJGSH t where to_char(t.xmbm) in
+		<foreach item="claimDetail" index="index" collection="list" open="(" separator="," close=")">  
+                #{claimDetail.productCode}
+         </foreach>
+	</select>
+
+	<select id="selectGroupCount" resultType="java.util.HashMap">
+		select t.fzxh,count(*) from T_XDSSJGSH t where t.xmbm in
+		<foreach item="claimDetail" index="index" collection="list" open="(" separator="," close=")">  
+                #{claimDetail.productCode}
+         </foreach>
+         group by t.fzxh
+	</select>
+
+</mapper>

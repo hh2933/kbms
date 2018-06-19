@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.shuxin.mapper.ruleengine.ViolationDetailMapper" >
+
+<insert id="addViolationDetail">
+	insert into ods_wgmxb
+	  (wgmxxh,
+	   wgdjh,
+	   gzbm,
+	   gzmc,
+	   gzfl,
+	   djztbm,
+	   djzt,
+	   jgfzbm,
+	   tsxx,
+	   xgjlid,
+	   fyxmbm,
+	   fyxmmc,
+	   wgje,
+	   wgsl,
+	   wgxh,
+	   DOCSERIALTYPE,
+	   DOCSERIALCODE,
+	   serviceDate,
+	   shsj)
+	values
+	  (#{DetailCode},
+	  #{againstCode},
+	  #{messageCode},
+	  #{ruleName},
+	  #{ruleType},
+	  #{billStatus},
+	  decode(#{billStatus},'1','违规单据','可疑单据'),
+	  '',
+	  #{message},
+	  '',
+	  #{productCode},
+	  #{productName},
+	  #{againstAmount},
+	  #{againstNum},	  
+	  #{violationCode},
+	  #{docSerialType},
+	  #{docSerialCode},
+	  #{serviceDate},
+	  sysdate)
+	
+</insert>
+
+<delete id="deleteViolationDetail">
+	delete from ods_wgmxb t
+ where t.wgxh = (select w.wgxh
+                   from ods_wgmxb w
+                  where w.FYXMBM in 
+                   <foreach item="productCode" index="index" collection="list" open="(" separator="," close=")">  
+		                #{productCode}
+		           </foreach>
+                    and WGDJH = #{againstCode}
+                    and rownum = 1)	
+</delete>
+
+<delete id="deleteViolationDetailById">
+	delete from ods_wgmxb t
+ where t.WGDJH = (select diaserialcode from T_PATIENT_INFORMATION where id=#{id})	
+</delete>
+
+<insert id="addViolationResult">
+	insert into t_Violation_result
+	  (id,
+	   results,
+	   result_id,
+	   create_date
+	   )
+	values
+	  (
+	  #{id},
+	  #{result,jdbcType=CLOB},
+	  #{result_id},
+	  sysdate)
+</insert>
+
+</mapper>

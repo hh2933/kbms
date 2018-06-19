@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.shuxin.mapper.DrugInfoMapper">
+
+<select id="selectDrugInfoVoPage" resultType="java.util.HashMap">
+	select t.id,t.drug_code,t.drug_name,
+	update_user,to_char(update_time,'yyyy-mm-dd hh24:mi:ss') update_time
+	 from t_drug_info t
+	where t.rule_type=#{ruleType}
+	<if test=" drugCode != null and drugCode != '' ">
+        and  drug_code like '%${drugCode}%'
+    </if>
+    <if test=" drugName != null and drugName != '' ">
+        and drug_name like '%${drugName}%'
+    </if>
+    order by t.drug_code
+</select>
+
+<select id="selectExistDrugInfo" resultType="java.lang.Integer">
+	select count(1) from t_drug_info t
+	where t.rule_type=#{ruleType} and t.drug_code=#{drugCode} 
+	<if test=" id != null and id != '' ">
+   		and id != #{id}
+   	</if>
+</select>
+
+<insert id="addDrugInfoHistory">
+	insert into t_drug_info_opt
+	(
+		id,
+		DRUG_CODE,
+	    DRUG_NAME,
+	    rule_type,
+	    OPT_TYPE,
+		create_time,
+	    create_user,
+	    update_time,
+	    update_user
+	)
+	select
+	id,
+		DRUG_CODE,
+	    DRUG_NAME,
+	    rule_type,
+	    #{optType}  OPT_TYPE,
+		sysdate create_time,
+       	#{loginName} create_user,
+        sysdate update_time,
+        #{loginName} update_user
+	    from t_drug_info
+	    where id in
+	     <foreach item="id" index="index" collection="list" open="(" separator="," close=")">  
+            #{id}
+        </foreach>
+</insert>
+
+<select id="selectDrugInfoHistory"  resultType="java.util.HashMap">
+	select t.id,t.drug_code,t.drug_name,OPT_TYPE,
+	update_user,to_char(update_time,'yyyy-mm-dd hh24:mi:ss') update_time
+	 from t_drug_info_opt t
+	where t.rule_type=#{ruleType}
+	order by update_time desc
+</select>
+
+<update id="importDrugInfo">
+	begin
+		<foreach collection="list" item="option" index="index" >
+		    insert into t_drug_info_opt (id,drug_code,drug_name,RULE_TYPE,opt_type,create_time,create_user,update_time,update_user)
+			select id,drug_code,drug_name,RULE_TYPE,'导入更新' opt_type, sysdate create_time,#{loginName} create_user,sysdate update_time,#{loginName} update_user
+			from t_drug_info where drug_code =#{option.field0} and RULE_TYPE=#{option.ruleType};
+			
+            insert into t_drug_info_opt(id,drug_code,drug_name,RULE_TYPE,opt_type,create_time,create_user,update_time,update_user)
+            select id,drug_code,drug_name,#{option.ruleType} RULE_TYPE,'导入新增' opt_type,sysdate create_time,#{loginName} create_user,sysdate update_time,#{loginName} update_user from
+            (select #{option.field2} id, #{option.field0} drug_code,#{option.field1} drug_name from dual) t where not exists
+			(select 1 from t_drug_info t1 where t1.drug_code=t.drug_code and t1.RULE_TYPE=#{option.ruleType});
+            
+            merge into t_drug_info t1
+            using (select #{option.field0} drug_code,#{option.field1} drug_name from dual) t2
+            on (t1.drug_code=t2.drug_code and t1.RULE_TYPE=#{option.ruleType})
+            WHEN MATCHED THEN
+               update set t1.drug_name=t2.drug_name,t1.update_time=sysdate,t1.update_user=#{loginName}
+            WHEN NOT MATCHED THEN
+               insert (id,drug_code,drug_name,RULE_TYPE,create_time,create_user,update_time,update_user)
+               VALUES
+               (#{option.field2},#{option.field0},#{option.field1},#{option.ruleType},sysdate,#{loginName},sysdate,#{loginName});
+              
+        </foreach>
+		end;
+	</update>
+	
+	<select id="selectExceptDrugInfo" resultType="java.lang.String">
+		select drug_code from t_drug_info where 
+		rule_type=#{ruleType}
+		and drug_code in
+		<foreach item="claimDetail" index="index" collection="list" open="(" separator="," close=")">  
+             #{claimDetail.productCode}
+        </foreach>
+	</select>
+
+</mapper>

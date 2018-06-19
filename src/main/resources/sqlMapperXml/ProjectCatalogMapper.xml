@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.shuxin.mapper.ProjectCatalogMapper">
+
+<select id="selectProjectCatalogVoPage" resultType="java.util.HashMap">
+	select t.id,
+       t.project_code,
+       t.newproject_code,
+       t.project_name,
+       t.project_connotation,
+       t.exception_content,
+       t.formats,
+       t.unit,
+       t.price,
+       t.manufacturer,
+       t.self_pay,
+       t.remark,
+       (select d.dict_name from t_dictionary d where 
+       d.DICT_TYPE_CODE='daf7294103544be48b9e6ced3e909028'
+        and d.DICT_CODE=t.limit_treatment) limit_treatment,
+       t.update_user,
+       to_char(t.update_time,'yyyy-mm-dd hh24:mi:ss') update_time
+  from t_project_catalog t
+  <where>
+  		<if test=" projectCode != null and projectCode != '' ">
+             project_code like '%${projectCode}%'
+        </if>
+        <if test=" projectName != null and projectName != '' ">
+            and project_name like '%${projectName}%'
+        </if>
+  </where>
+  		order by project_code  
+</select>
+
+<select id="selectExistProjectCatalog" resultType="java.lang.Integer">
+	select count(1) from t_project_catalog t where t.project_code=#{projectCode} 
+     	<if test=" id != null and id != '' ">
+     		and id != #{id}
+     	</if>
+</select>
+<insert id="addProjectCatalogHistory">
+	insert into t_project_catalog_opt
+  (id,
+   project_code,
+   newproject_code,
+   project_name,
+   project_connotation,
+   exception_content,
+   formats,
+   unit,
+   price,
+   manufacturer,
+   self_pay,
+   limit_treatment,
+   remark,   
+   opt_type,
+   create_time,
+   create_user,
+   update_time,
+   update_user)
+  select id,
+         project_code,
+         newproject_code,
+         project_name,
+         project_connotation,
+         exception_content,
+         formats,
+         unit,
+         price,
+         manufacturer,
+         self_pay,
+         limit_treatment,
+         remark,
+         #{optType} opt_type,
+         sysdate create_time,
+         #{loginName} create_user,
+         sysdate update_time,
+         #{loginName} update_user
+    from t_project_catalog t
+   where t.id in
+     <foreach item="id" index="index" collection="list" open="(" separator="," close=")">  
+            #{id}
+     </foreach>
+</insert>
+
+<select id="searchProjectCatalogHistroy" resultType="java.util.HashMap">
+	select t.project_code,
+       t.newproject_code,
+       t.project_name,
+       t.project_connotation,
+       t.exception_content,
+       t.formats,
+       t.unit,
+       t.price,
+       t.manufacturer,
+       t.self_pay,
+       t.remark,
+       t.opt_type,
+       (select d.dict_name from t_dictionary d where 
+       d.DICT_TYPE_CODE='daf7294103544be48b9e6ced3e909028'
+        and d.DICT_CODE=t.limit_treatment) limit_treatment,
+       t.update_user,
+       to_char(t.update_time,'yyyy-mm-dd hh24:mi:ss') update_time
+  from t_project_catalog_opt t
+  order by t.update_time desc
+</select>
+
+<update id="importProjectCatalog">
+	begin
+		<foreach collection="list" item="option" index="index" >
+		    insert into t_project_catalog_opt (id,project_Code,newproject_Code,project_Name,formats,unit,price,Manufacturer,self_pay,project_connotation,exception_content,remark,limit_treatment,opt_type,create_time,create_user,update_time,update_user)
+			select id,project_Code,newproject_Code,project_Name,formats,unit,price,Manufacturer,self_pay,project_connotation,exception_content,remark,limit_treatment,'导入更新' opt_type, sysdate create_time,#{loginName} create_user,sysdate update_time,#{loginName} update_user
+			from t_project_catalog where project_Code =#{option.field0};
+						
+            insert into t_project_catalog_opt(id,project_Code,newproject_Code,project_Name,formats,unit,price,Manufacturer,self_pay,project_connotation,exception_content,remark,limit_treatment,opt_type,create_time,create_user,update_time,update_user)
+            select id,project_Code,newproject_Code,project_Name,formats,unit,price,Manufacturer,self_pay,project_connotation,exception_content,remark,limit_treatment,'导入新增' opt_type,sysdate create_time,#{loginName} create_user,sysdate update_time,#{loginName} update_user from 
+            (select #{option.field12} id,#{option.field0} project_Code,#{option.field1} newproject_Code,#{option.field2} project_Name,#{option.field3} formats,
+            #{option.field4} unit,#{option.field5} price,#{option.field6} Manufacturer,#{option.field7} self_pay,#{option.field8} project_connotation,
+            #{option.field9} exception_content,#{option.field10} limit_treatment,#{option.field11} remark from dual) t where not exists
+			(select 1 from t_project_catalog t1 where t1.project_Code=t.project_Code);
+            
+            merge into t_project_catalog t1
+            using (select #{option.field0} project_Code,#{option.field1} newproject_Code,#{option.field2} project_Name,#{option.field3} formats,
+            #{option.field4} unit,#{option.field5} price,#{option.field6} Manufacturer,#{option.field7} self_pay,#{option.field8} project_connotation,
+            #{option.field9} exception_content,#{option.field10} limit_treatment,#{option.field11} remark from dual) t2
+            on (t1.project_Code=t2.project_Code)
+            WHEN MATCHED THEN
+               update set t1.newproject_Code=t2.newproject_Code,t1.project_Name=t2.project_Name,t1.formats=t2.formats,t1.unit=t2.unit,
+                          t1.price=t2.price,t1.Manufacturer=t2.Manufacturer,t1.self_pay=t2.self_pay,t1.project_connotation=t2.project_connotation,
+                          t1.exception_content=t2.exception_content,t1.limit_treatment=t2.limit_treatment,t1.remark=t2.remark,t1.update_time=sysdate,t1.update_user=#{loginName}
+            WHEN NOT MATCHED THEN
+               insert (id,project_Code,newproject_Code,project_Name,formats,unit,price,Manufacturer,self_pay,project_connotation,exception_content,limit_treatment,remark,create_time,create_user,update_time,update_user)
+               VALUES
+               (#{option.field12},#{option.field0},#{option.field1},#{option.field2},#{option.field3},#{option.field4},#{option.field5},#{option.field6},#{option.field7},#{option.field8},#{option.field9},#{option.field10},#{option.field11},sysdate,#{loginName},sysdate,#{loginName});
+              
+        </foreach>
+	end;
+</update>
+
+</mapper>

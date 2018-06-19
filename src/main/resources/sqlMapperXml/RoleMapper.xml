@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.shuxin.mapper.RoleMapper">
+
+    <!-- 通用查询结果列-->
+    <sql id="Base_Column_List">
+        id, name,  description, status
+    </sql>
+
+    <select id="selectResourceIdListByRoleId" resultType="java.lang.String" parameterType="java.lang.String">
+        SELECT
+            e.menu_id AS id
+        FROM
+            t_role r
+        LEFT JOIN t_role_menu e ON r.id = e.role_id
+        WHERE
+            r.id = #{id}
+    </select>
+
+    <select id="selectResourceListByRoleIdList" resultType="com.shuxin.model.Menu"
+            parameterType="java.lang.String">
+        SELECT
+            DISTINCT s.id AS id,
+            s.NAME AS name,
+            s.url AS url,
+            s.description AS description,
+            s.icon AS icon,
+            s.p_id AS pid,
+            s.order_seq AS seq,
+            s.STATUS AS status,
+            s.open_mode AS openMode,
+            s.ishaschildren AS ishaschildren,
+            rt.rule_code
+        FROM t_menu s
+		   LEFT JOIN t_role_menu e
+		   ON e.menu_id = s.id   
+		   LEFT JOIN t_role r
+		   ON r.id = e.role_id
+		   LEFT JOIN t_rule_table_info rt
+       	   ON rt.menu_id = s.id
+        WHERE
+            r.id in  
+            <foreach item="item" index="index" collection="list" open="(" separator="," close=")">  
+                #{item}
+            </foreach>
+        ORDER BY seq,rt.rule_code
+    </select>
+
+    
+</mapper>

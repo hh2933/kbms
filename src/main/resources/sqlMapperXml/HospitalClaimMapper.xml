@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.shuxin.mapper.ruleengine.HospitalClaimMapper">
+
+	<resultMap id="hospitalClaimMap" type="com.shuxin.model.ruleengine.HospitalClaim">
+        <result column="id" property="id" jdbcType="VARCHAR"/>
+		<result column="pointOrgId" property="pointOrgId" jdbcType="VARCHAR"/>
+		<result column="pointOrgGrade" property="pointOrgGrade" jdbcType="VARCHAR"/>
+		<result column="pointOrgType" property="pointOrgType" jdbcType="VARCHAR"/>
+		<result column="diaSerialCode" property="diaSerialCode" jdbcType="VARCHAR"/>
+		<result column="medTreatmentMode" property="medTreatmentMode" jdbcType="VARCHAR"/>
+		<result column="medTreatmentCode" property="medTreatmentCode" jdbcType="VARCHAR"/>
+		<result column="patCode" property="patCode" jdbcType="VARCHAR"/>
+		<result column="patMedInsuCard" property="patMedInsuCard" jdbcType="VARCHAR"/>
+		<result column="patName" property="patName" jdbcType="VARCHAR"/>
+		<result column="patInsuredType" property="patInsuredType" jdbcType="VARCHAR"/>
+		<result column="patIsPregnant" property="patIsPregnant" jdbcType="VARCHAR"/>
+		<result column="patIsNursing" property="patIsNursing" jdbcType="VARCHAR"/>
+		<result column="patGender" property="patGender" jdbcType="VARCHAR"/>
+		<result column="patAge" property="patAge" jdbcType="TINYINT"/>
+		<result column="patHeight" property="patHeight" jdbcType="FLOAT"/>
+		<result column="patWeight" property="patWeight" jdbcType="FLOAT"/>
+		<result column="patIdCard" property="patIdCard" jdbcType="VARCHAR"/>
+		<result column="patType" property="patType" jdbcType="VARCHAR"/>
+		<result column="patBirthday" property="patBirthday" jdbcType="VARCHAR"/>
+		<result column="diaInHospCode" property="diaInHospCode" jdbcType="VARCHAR"/>
+		<result column="diaInHospName" property="diaInHospName" jdbcType="VARCHAR"/>
+		<result column="diaOutHospCode" property="diaOutHospCode" jdbcType="VARCHAR"/>
+		<result column="diaOutHospName" property="diaOutHospName" jdbcType="VARCHAR"/>
+		<result column="diaViceCode" property="diaViceCode" jdbcType="VARCHAR"/>
+		<result column="inHospDate" property="inHospDate" jdbcType="DATE"/>
+		<result column="outHospDate" property="outHospDate" jdbcType="DATE"/>
+		<result column="settlementDate" property="settlementDate" jdbcType="DATE"/>
+		<result column="inHospDeptCode" property="inHospDeptCode" jdbcType="VARCHAR"/>
+		<result column="inHospDeptName" property="inHospDeptName" jdbcType="VARCHAR"/>
+		<result column="outHospDeptCode" property="outHospDeptCode" jdbcType="VARCHAR"/>
+		<result column="outHospDeptName" property="outHospDeptName" jdbcType="VARCHAR"/>
+		<result column="physicianCode" property="physicianCode" jdbcType="VARCHAR"/>
+		<result column="physicianName" property="physicianName" jdbcType="VARCHAR"/>
+		<result column="physicianLevel" property="physicianLevel" jdbcType="VARCHAR"/>
+		<result column="isRemote" property="isRemote" jdbcType="VARCHAR"/>
+		<result column="medInsTotalCost" property="medInsTotalCost" jdbcType="VARCHAR"/>
+		<result column="totalCost" property="totalCost" jdbcType="VARCHAR"/>
+		<result column="treatmentType" property="treatmentType" jdbcType="VARCHAR"/>
+		<result column="disSoldierSign" property="disSoldierSign" jdbcType="VARCHAR"/>
+		<result column="becWarPubSign" property="becWarPubSign" jdbcType="VARCHAR"/>
+		<result column="healType" property="healType" jdbcType="VARCHAR"/>
+		<result column="inpaArea" property="inpaArea" jdbcType="VARCHAR"/>
+		<result column="medRecordCode" property="medRecordCode" jdbcType="VARCHAR"/>
+		<result column="liveHospStatus" property="liveHospStatus" jdbcType="VARCHAR"/>
+		<result column="isIncrement" property="isIncrement" jdbcType="VARCHAR"/>
+		<result column="insuHandId" property="insuHandId" jdbcType="VARCHAR"/>
+
+    </resultMap>
+    
+    <delete id="deleteHospitalClaim">
+    	delete from T_PATIENT_INFORMATION where id=#{id}
+    </delete>
+
+	<select id="selectMonthTakeDrugsInfo" resultType="java.util.HashMap">
+		select d.productcode ,count(distinct t.diaserialcode) count,sum(d.PNUMBER) PNUMBER
+      from T_PATIENT_INFORMATION t,T_CHARGE_DETAILS d
+     where  d.diaserialcode = t.diaserialcode   
+            and t.PATCODE =#{patCode}         
+            and   to_char(t.settlementdate,'yyyy-mm')=to_char(sysdate,'yyyy-mm')
+            and d.productcode in
+            <foreach item="drug" index="index" collection="list" open="(" separator="," close=")">  
+	            #{drug.productCode}
+	     	 </foreach>
+            group by d.productcode 
+	</select>
+	
+	<select id="selectLastOutHospitalDate" resultType="java.lang.String">
+		select to_char(max(t.outhospdate),'yyyy-mm-dd') outhospdate  from T_PATIENT_INFORMATION t
+ 		where t.patcode=#{patCode} and t.diaserialcode !=#{diaserialCode} 
+ 		and t.medtreatmentmode in('21','22','25','52','72')
+	</select>
+ 
+</mapper>

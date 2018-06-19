@@ -1,0 +1,469 @@
+html{max-width:1920px;min-width:1080px;}
+.xPage {
+    width: 100%;
+}
+button::-moz-focus-inner,
+input::-moz-focus-inner {
+    padding: 0;
+    border: none;
+}
+.xHead {
+    width: 100%;
+    height: 80px;
+    line-height: 90px;
+    overflow: hidden;
+    text-indent: 20px;
+    font-size: 24px;
+    color: #fff;
+    border-bottom: 1px solid #a8e3fa;
+    background: #00aeef;
+}
+.border-none{
+	border-right:3px solid #4373FF;
+}
+.xName {
+    font-size: 20px;
+    color: #fff;
+    margin-top: 35px;
+}
+
+.xMain {
+    position: absolute;
+    left: 0;
+    top: 90px;
+    bottom: 30px;
+    right: 0;
+}
+@media only screen and (max-width:1160px)
+{
+    .admin-div{left: 900px}
+}
+
+.xLeftbox {
+    position: fixed;
+    width: 220px;
+    height: 90%;
+    top:70px;
+    left: 0;
+    z-index: 100;
+    background: #E6E6E6;
+    overflow-y: auto;
+}
+.header-title {
+    position: fixed;
+    width: 100%;
+    height: 70px;
+    top: 0;
+    z-index: 100;
+    background: #0C71D2;
+}
+.logo-div{
+    width: 220px;
+    height: 70px;
+    background: #024B93;
+}
+.header-title-div{
+    position: fixed;
+    min-width: 412px;
+    overflow:auto;
+    height: 70px;
+    left: 280px;
+    padding-top: 20px;
+}
+.header-title-div img{
+    width: 100%;
+}
+.admin-div{
+    width: 260px;
+    height: 70px;
+    line-height: 40px;
+    position: absolute;
+    float: left;
+    right: 20px;
+    padding-top: 12px;
+    white-space: nowrap;
+    overflow:hidden;
+
+}
+.admin-div img{width: 100%}
+.admin-div .img1 {
+    vertical-align: text-bottom;
+    width: 18px;
+    height: 18px;
+    cursor:pointer;
+}
+.admin-div .img2{
+    width: 18px;
+    height: 18px;
+    margin-left: 10px;
+    vertical-align: text-bottom;
+}
+.admin-div .img3{
+    vertical-align: text-bottom;
+    width: 16px;
+    height: 14px;
+    margin-left: 10px;
+}
+.admin-div .img4{
+    vertical-align: text-bottom;
+    width: 16px;
+    height: 14px;
+    margin-left: 10px;
+}
+.admin-div span{
+    color: #ffffff;
+}
+.cursor{
+    cursor:pointer;
+    color: #89BDFD !important;
+}
+.header-title-img1 {
+    margin-top: 10px;
+    margin-left: 30px;
+    width: 170px;
+    height: 50px;
+}
+.header-title-title {
+    display: block;
+    width: auto;
+    white-space: nowrap;
+    padding-left: 5px;
+    font-size: 28px;
+    color: #0065B9;
+    margin-left: 290px;
+    margin-top: 12px;
+}
+.header-title-span {
+    float: left;
+    display: block;
+    font-size: 16px;
+    color: #1E1E1E;
+    margin-left: 6px;
+    margin-right: 20px;
+    margin-top: 26px;
+}
+.xMenu {
+    width: 100%;
+}
+.xMenu li a {
+    position: relative;
+    text-decoration: none;
+    height: 50px;
+    line-height: 50px;
+    padding-left: 38px;
+    display: block;
+    color: #1E1E1E;
+    border-bottom: 3px solid #f8f8f8;
+}
+
+.xMenu li{
+    border: none;
+}
+.span-font {
+    padding-left: 26px;
+}
+.span-font1 {
+    padding-left: 26px;
+}
+.xMenu li li a {
+   
+    height: 36px;
+    line-height: 36px;
+    background: #fff;
+    padding-left: 74px !important;
+}
+.xMenu li li li a .three_style{
+    color: #000;
+    background: #fff;
+}
+
+.xMenu ul {
+    display: block;
+}
+
+.xMenuOne {
+    position: relative;
+}
+
+.xMenuOne .xMenuShow {
+    background-position: -6px -6px;
+}
+
+.xMenu li li .xMenuFocus {
+    color: #4373FF;
+    border-right: 3px solid #4373FF
+}
+
+.xMenu li .xMenuFocus1 {
+    background: #F4F4F4;
+    color: #4373FF;
+}
+.xMenu li .bg-li{
+    background: #F4F4F4;
+}
+
+.xMenu li .xMenuonefocus {
+    color: #4373FF;
+    background: #ffffff;
+    border-right: 3px solid #4373FF
+}
+
+.xMenuThree {
+    display: block;
+}
+
+.xMenuThree {
+    padding-left: 56px;
+}
+
+/*.xMenuThree span {
+    display: block;
+    cursor: pointer;
+    line-height: 24px;
+    font-size: 12px;
+}*/
+
+
+.xRightbox {
+    min-width: 1000px;
+    height: 100%;
+    margin-left: 240px;
+    margin-right: 20px;
+    position: relative;
+}
+.em-up{
+    width:10px;
+    height:12px;
+    display:block;
+    position:absolute;
+    top:20px;
+    right: 10px;
+    background:url('../images/normal.png') center right no-repeat;
+}
+.em-up2{
+    width:10px;
+    height:12px;
+    display:block;
+    position:absolute;
+    top:12px;
+    right: 10px;
+    background:url('../images/normal.png') center right no-repeat;
+}
+.em1 {
+    width: 20px;
+    height: 20px;
+    display: block;
+    position: absolute;
+    top: 14px;
+    left: 30px;
+    background: url('../images/em1.png') center right no-repeat;
+}
+
+.em2 {
+    width: 20px;
+    height: 20px;
+    display: block;
+    position: absolute;
+    top: 14px;
+    left: 30px;
+    background: url('../images/em2.png') center right no-repeat;
+}
+
+.em3 {
+    width: 20px;
+    height: 20px;
+    display: block;
+    position: absolute;
+    top: 14px;
+    left: 30px;
+    background: url('../images/em3.png') center right no-repeat;
+}
+
+.em4 {
+    width: 18px;
+    height: 18px;
+    display: block;
+    position: absolute;
+    top: 14px;
+    left: 30px;
+    background: url('../images/em4.png') center right no-repeat;
+}
+
+.em5 {
+    width: 18px;
+    height: 18px;
+    display: block;
+    position: absolute;
+    top: 14px;
+    left: 30px;
+    background: url('../images/em5.png') center right no-repeat;
+}
+
+.em6 {
+    width: 18px;
+    height: 18px;
+    display: block;
+    position: absolute;
+    top: 14px;
+    left: 30px;
+    background: url('../images/em6.png') center right no-repeat;
+}
+
+.em7 {
+    width: 18px;
+    height: 18px;
+    display: block;
+    position: absolute;
+    top: 14px;
+    left: 30px;
+    background: url('../images/em7.png') center right no-repeat;
+}
+
+.em8 {
+    width: 18px;
+    height: 18px;
+    display: block;
+    position: absolute;
+    top: 14px;
+    left: 30px;
+    background: url('../images/em8.png') center right no-repeat;
+}
+
+.em9 {
+    width: 18px;
+    height: 18px;
+    display: block;
+    position: absolute;
+    top: 14px;
+    left: 30px;
+    background: url('../images/em9.png') center right no-repeat;
+}
+
+.xMenu-li {
+    background: #ffffff;
+}
+.xMenu li .xMenuonefocus1 .em-up{
+    width:12px;
+    height:10px;
+    display:block;
+    position:absolute;
+    top:20px;
+    right: 10px;
+    background:url('../images/active.png') center right no-repeat;
+}
+.xMenu li .xMenuonefocus2 .em-up2{
+    width:12px;
+    height:10px;
+    display:block;
+    position:absolute;
+    top:14px;
+    right: 10px;
+    background:url('../images/active.png') center right no-repeat;
+}
+.xMenuonefocus1 .em1 {
+    width: 20px;
+    height: 20px;
+    display: block;
+    position: absolute;
+    top: 14px;
+    left: 30px;
+    background: url('../images/em1-1.png') center right no-repeat;
+}
+
+.xMenuonefocus1 .em2 {
+    width: 20px;
+    height: 20px;
+    display: block;
+    position: absolute;
+    top: 14px;
+    left: 30px;
+    background: url('../images/em2-2.png') center right no-repeat;
+}
+
+.xMenuonefocus1 .em3 {
+    width: 20px;
+    height: 20px;
+    display: block;
+    position: absolute;
+    top: 14px;
+    left: 30px;
+    background: url('../images/em3-3.png') center right no-repeat;
+}
+
+.xMenuonefocus1 .em4 {
+    width: 20px;
+    height: 20px;
+    display: block;
+    position: absolute;
+    top: 14px;
+    left: 30px;
+    background: url('../images/em4-4.png') center right no-repeat;
+}
+
+.xMenuonefocus1 .em5 {
+    width: 20px;
+    height: 20px;
+    display: block;
+    position: absolute;
+    top: 14px;
+    left: 30px;
+    background: url('../images/em4-4.png') center right no-repeat;
+}
+
+.xMenuonefocus1 .em6 {
+    width: 20px;
+    height: 20px;
+    display: block;
+    position: absolute;
+    top: 14px;
+    left: 30px;
+    background: url('../images/em6-6.png') center right no-repeat;
+}
+
+.xMenuonefocus1 .em7 {
+    width: 20px;
+    height: 20px;
+    display: block;
+    position: absolute;
+    top: 14px;
+    left: 30px;
+    background: url('../images/em7-7.png') center right no-repeat;
+}
+
+.xMenuonefocus1 .em8 {
+    width: 20px;
+    height: 20px;
+    display: block;
+    position: absolute;
+    top: 14px;
+    left: 30px;
+    background: url('../images/em8-8.png') center right no-repeat;
+}
+
+.xMenuonefocus1 .em9 {
+    width: 20px;
+    height: 20px;
+    display: block;
+    position: absolute;
+    top: 14px;
+    left: 30px;
+    background: url('../images/em9-9.png') center right no-repeat;
+}
+
+.on-bg-li {
+    color: #4373FF;
+    background: #ffffff;
+}
+
+.on-bg-li .span-font {
+    color: #4373FF;
+}
+
+.on-bg-two {
+
+    color: #4373FF !important;
+}
+
+.on-bg-two .span-font1 {
+    color: #4373FF !important;
+}

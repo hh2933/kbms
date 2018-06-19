@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.shuxin.mapper.SysUserMapper">
+
+    <resultMap id="userVoResultMap" type="com.shuxin.model.vo.SysUserVo">
+        <id column="id" property="id" jdbcType="VARCHAR"/>
+        <result column="user_name" property="userName" jdbcType="VARCHAR"/>
+        <result column="name" property="name" jdbcType="VARCHAR"/>
+        <result column="user_password" property="userPassword" jdbcType="VARCHAR"/>
+        <result column="sex" property="sex" jdbcType="TINYINT"/>
+        <result column="age" property="age" jdbcType="TINYINT"/>
+       <!--  <result column="user_type" property="userType" jdbcType="TINYINT"/> -->
+        <result column="status" property="status" jdbcType="TINYINT"/>
+       <!--  <result column="organization_id" property="organizationId" jdbcType="VARCHAR"/> -->
+        <result column="create_time" property="createTime" jdbcType="TIMESTAMP"/>       
+        <result column="update_time" property="updateTime" jdbcType="TIMESTAMP"/>
+        <result column="phone" property="phone" jdbcType="VARCHAR"/>
+        <result column="create_user" property="createUser" jdbcType="VARCHAR"/>
+        <result column="update_user" property="updateUser" jdbcType="VARCHAR"/>
+        <result column="department_id" property="departmentId" jdbcType="VARCHAR"/>
+
+       
+
+        <collection property="rolesList" ofType="Role">
+            <id column="roleId" property="id"/>
+            <result column="roleName" property="name"/>
+        </collection>
+    </resultMap>
+
+    <!-- 通用查询结果列-->
+    <sql id="Base_Column_List">
+        id, user_name  AS userName, name, user_password, sex, age, phone, status,  create_time AS createTime
+    </sql>
+
+    <select id="selectUserVoById" resultMap="userVoResultMap" parameterType="java.lang.String">
+        SELECT
+        t.id,
+        t.user_name,
+        t.name,
+        t.user_password,
+        sex,
+        age,      
+        t.status,
+    
+        t.create_time,
+        phone,       
+        o.id AS roleId,
+        o.name AS roleName
+        FROM
+        t_user t
+        LEFT JOIN t_role_user r ON t.id = r.user_id
+        LEFT JOIN t_role o ON r.role_id = o.id
+      
+        <where>
+            t.id = #{id}
+        </where>
+    </select>
+
+    <select id="selectUserVoPage" resultMap="userVoResultMap">
+        SELECT
+        t.id,
+        t.user_name ,
+        t.name,
+        t.user_password,
+        t.sex,
+        t.age,
+   
+        t.status,
+     
+        t.create_time,
+        t.phone,
+   
+        o.id AS roleId,
+        o.name AS roleName
+        FROM
+        t_user t
+        LEFT JOIN  t_role_user r ON t.id = r.user_id
+        LEFT JOIN t_role o ON r.role_id = o.id
+     
+        <where>
+            <if test=" name != null and name != '' ">
+                t.name like '%${name}%'
+            </if>   
+            <if test=" startTime != null ">
+                <![CDATA[ and t.create_time >= #{startTime} ]]>
+            </if>
+            <if test=" endTime != null ">
+                <![CDATA[ and t.create_time <= #{endTime} ]]>
+            </if>
+        </where>
+    </select>
+    
+    <select id="selectUserIdByLoginName" resultType="java.lang.String">
+    	select id from t_user where user_name=#{loginName}
+    </select>
+
+</mapper>

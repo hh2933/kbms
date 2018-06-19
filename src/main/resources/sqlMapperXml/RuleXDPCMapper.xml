@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.shuxin.mapper.ruleengine.RuleXDPCMapper">
+	
+	<select id="selectLimitFrequencyIllegal" resultType="java.util.HashMap">
+		select to_char(t.xmbm) xmbm, to_char(t.sjjglx) sjjglx,t.sjjgt,
+		to_number(t.mzxdcs) mzxdcs,to_number(t.zyxdcs) zyxdcs,t.tsxx,t.zytsstsw,t.sfshmzjxdks
+		 from t_xdpcwg t where to_char(t.xmbm) in
+		<foreach item="claimDetail" index="index" collection="list" open="(" separator="," close=")">  
+                #{claimDetail.productCode}
+         </foreach>
+	</select>
+	
+	<select id="selectLimitFrequencySuspicion" resultType="java.util.HashMap">
+		select to_char(t.xmbm) xmbm, to_char(t.sjjglx) sjjglx,t.sjjgt,
+		to_number(t.mzxdcs) mzxdcs,to_number(t.zyxdcs) zyxdcs,t.tsxx,t.zytsstsw,t.sfshmzjxdks
+		 from t_xdpcky t where to_char(t.xmbm) in
+		<foreach item="claimDetail" index="index" collection="list" open="(" separator="," close=")">  
+                #{claimDetail.productCode}
+         </foreach>
+	</select>
+</mapper>

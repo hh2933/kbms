@@ -1,0 +1,238 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.shuxin.mapper.ruleengine.HospitalClaimDetailMapper">
+
+  
+	<resultMap id="hospitalClaimDetailMap" type="com.shuxin.model.ruleengine.HospitalClaimDetail">
+        <id column="id" property="id" jdbcType="VARCHAR"/>
+		<id column="itemCode" property="itemCode" jdbcType="VARCHAR"/>
+		<id column="diaSerialCode" property="diaSerialCode" jdbcType="VARCHAR"/>
+		<id column="docSerialCode" property="docSerialCode" jdbcType="VARCHAR"/>
+		<id column="productCode" property="productCode" jdbcType="VARCHAR"/>
+		<id column="productName" property="productName" jdbcType="VARCHAR"/>
+		<id column="typeCode" property="typeCode" jdbcType="VARCHAR"/>
+		<id column="typeName" property="typeName" jdbcType="VARCHAR"/>
+		<id column="thrCatType" property="thrCatType" jdbcType="VARCHAR"/>
+		<id column="reimLevel" property="reimLevel" jdbcType="VARCHAR"/>
+		<id column="outHospTakMedicine" property="outHospTakMedicine" jdbcType="VARCHAR"/>
+		<id column="unitPrice" property="unitPrice" jdbcType="FLOAT"/>
+		<id column="pnumber" property="pnumber" jdbcType="FLOAT"/>
+		<id column="amount" property="amount" jdbcType="FLOAT"/>
+		<id column="unit" property="unit" jdbcType="VARCHAR"/>
+		<id column="String" property="String" jdbcType="VARCHAR"/>
+		<id column="medDays" property="medDays" jdbcType="FLOAT"/>
+		<id column="dosage" property="dosage" jdbcType="FLOAT"/>
+		<id column="frequency" property="frequency" jdbcType="FLOAT"/>
+		<id column="cardNum" property="cardNum" jdbcType="FLOAT"/>
+		<id column="outYardSign" property="outYardSign" jdbcType="VARCHAR"/>
+		<id column="chargSign" property="chargSign" jdbcType="VARCHAR"/>
+		<id column="serviceDate" property="serviceDate" jdbcType="DATE"/>
+		<id column="hospDeptCode" property="hospDeptCode" jdbcType="VARCHAR"/>
+		<id column="hospDeptName" property="hospDeptName" jdbcType="VARCHAR"/>
+		<id column="physicianCode" property="physicianCode" jdbcType="VARCHAR"/>
+		<id column="physicianName" property="physicianName" jdbcType="VARCHAR"/>
+		<id column="medInsCost" property="medInsCost" jdbcType="VARCHAR"/>
+		<id column="payCost" property="payCost" jdbcType="FLOAT"/>
+		<id column="selfCost" property="selfCost" jdbcType="FLOAT"/>
+
+    </resultMap>
+    
+    <select id="selectLastClaimDetail" resultType="java.util.HashMap">
+    	select t.PNUMBER, t.productcode, t.Servicedate
+		  from (select  sum(c.PNUMBER) PNUMBER, c.productcode, c.Servicedate
+		          from T_CHARGE_DETAILS c, T_PATIENT_INFORMATION p
+		         where c.DIASERIALCODE = p.diaserialcode
+		           and p.PATCODE = #{patCode}
+		           and c.productcode = #{productCode}
+		           and c.id not in
+		           <foreach item="id" index="index" collection="list" open="(" separator="," close=")">  
+			            #{id}
+			     	</foreach>   
+		           group by  c.productcode, c.Servicedate
+             	   order by c.Servicedate desc) t
+		 where rownum = 1
+    </select>
+    
+    <select id="selectPatTodayProjectCode" resultType="java.lang.String">
+    	select productcode from T_CHARGE_DETAILS t 
+		where exists (select diaserialcode 
+									from T_PATIENT_INFORMATION t1 
+									where t1.patcode=#{patCode} 
+									and t1.diaserialcode = t.diaserialcode) 
+		and trunc(t.servicedate)=trunc(sysdate)
+		and t.id not in
+	 	<foreach item="claimDetail" index="index" collection="list" open="(" separator="," close=")">  
+              #{claimDetail.id}
+        </foreach>
+    </select>
+
+	<select id="selectFirstDrugCount"  resultType="java.lang.Integer">
+		select count(1)
+		  from T_CHARGE_DETAILS t, T_PATIENT_INFORMATION p
+		 where t.diaserialcode = p.diaserialcode
+		   and exists (select 1
+		          from t_step_drug_mapping d
+		         where d.drug_code = t.productcode
+		           and d.drug_group = #{groupCode})
+		   and p.PATCODE = #{patCode}
+		   <if test=" isCurrent != null and isCurrent != '' ">
+	         and  t.id not in 
+	            <foreach item="claimDetail" index="index" collection="list" open="(" separator="," close=")">  
+	                #{claimDetail.id}
+	           </foreach>
+	       </if>
+	        <if test=" isLastMonth == 'true' ">
+	        	and to_char(t.servicedate, 'yyyy-mm')=#{serviceDate}
+	        </if>
+	        <if test="  isLastMonth != 'true' ">
+	        	and  t.servicedate>= trunc(sysdate) - 30
+	          <!-- <![CDATA[and to_char(t.servicedate, 'yyyy-mm-dd') >= to_char(sysdate - ${days}, 'yyyy-mm-dd')]]> -->
+	          
+	        </if>
+	</select>
+	
+	<select id="selectFrequentlyDrugCount" resultType="java.util.HashMap">
+		select productcode, count(1) count from
+		(
+		select t.productcode,t.diaserialcode from T_CHARGE_DETAILS t, T_PATIENT_INFORMATION p
+		where t.diaserialcode = p.diaserialcode
+		and p.PATCODE =#{patCode}
+		and t.productcode in 
+		<foreach item="hospitalClaim" index="index" collection="list" open="(" separator="," close=")">  
+            #{hospitalClaim.productCode}
+     	</foreach>
+     	and  t.id not in 
+         <foreach item="claimDetail" index="index" collection="list" open="(" separator="," close=")">  
+             #{claimDetail.id}
+         </foreach>
+         <![CDATA[and  trunc(t.servicedate)>trunc(sysdate-${frequentlyDrugDay})]]>
+		group by t.productcode,t.diaserialcode)
+        group by productcode
+	</select>
+	
+	<select id="selectFrequentlyDrugNumber" resultType="java.math.BigDecimal">
+		select nvl(sum(t.pnumber),0) from  T_CHARGE_DETAILS t, T_PATIENT_INFORMATION p
+		where t.diaserialcode = p.diaserialcode
+				and p.PATCODE =#{patCode}
+		    and  t.productcode=#{productCode}
+		    <if test=" fromDate != null and fromDate != '' ">
+		    and  trunc(t.servicedate) between to_date(#{fromDate},'yyyy-mm-dd') and to_date(#{toDate},'yyyy-mm-dd')
+		    </if>
+		    <if test=" intervalDays != null and intervalDays != '' ">
+		    and  trunc(t.servicedate) between to_date(#{toDate},'yyyy-mm-dd')-${intervalDays} and  to_date(#{toDate},'yyyy-mm-dd') 
+		    </if>
+	</select>
+	
+	<delete id="deleteHospitalClaimDetail">
+		delete from T_CHARGE_DETAILS where diaserialcode=
+		(select diaserialcode from T_PATIENT_INFORMATION where id=#{id})
+	</delete>
+	
+	<select id="selectSpecialPatientDrugAmount" resultType="java.math.BigDecimal">
+		select nvl(sum(c.AMOUNT),0) medinscost from T_PATIENT_INFORMATION p,T_CHARGE_DETAILS c where p.diaserialcode=c.diaserialcode and
+  			p.patcode=#{patCode}  
+  			and p.medtreatmentmode='13' and c.thrcattype='1'
+  			<if test=" diaInHospCode != null and diaInHospCode != '' ">
+  			 and c.MGBZ=#{diaInHospCode}
+  		    </if>
+  			<if test=" dateType == 'month' ">
+  			and to_char(c.servicedate,'yyyy-mm')=to_char(sysdate,'yyyy-mm')
+  			</if>
+  			<if test=" dateType == 'year' ">
+  			and to_char(c.servicedate,'yyyy')=to_char(sysdate,'yyyy')
+  			</if>
+	</select>
+	
+	<select id="selectSpecialPatientDrugAmountOne" resultType="java.math.BigDecimal">
+		select nvl(sum(c.AMOUNT),0) medinscost from T_PATIENT_INFORMATION p,T_CHARGE_DETAILS c where p.diaserialcode=c.diaserialcode and
+  			p.patcode=#{patCode}  
+  			and p.medtreatmentmode='13' and c.thrcattype='1'
+  			 and c.MGBZ in
+  			    <foreach item="diaInHospCode" index="index" collection="list" open="(" separator="," close=")">  
+	                #{diaInHospCode}
+	           </foreach>
+  			<if test=" dateType == 'month' ">
+  			and to_char(c.servicedate,'yyyy-mm')=to_char(sysdate,'yyyy-mm')
+  			</if>
+  			<if test=" dateType == 'year' ">
+  			and to_char(c.servicedate,'yyyy')=to_char(sysdate,'yyyy')
+  			</if>
+	</select>
+ 	
+ 	<insert id="insertBathHospitalClaimDetail">
+ 	begin
+ 		<foreach collection="list" item="option" index="index" >
+ 			INSERT INTO T_CHARGE_DETAILS
+  (  id                  ,
+  diaserialcode       ,
+  docserialcode       ,
+  productcode         ,
+  productname         ,
+  thrcattype          ,
+  reimlevel           ,
+  outhosptakmedicine  ,
+  unitprice           ,
+  pnumber             ,
+  amount              ,
+  unit                ,
+  spec                ,
+  meddays             ,
+  dosage              ,
+  frequency           ,
+  cardnum             ,
+  outyardsign         ,
+  chargsign           ,
+  servicedate         ,
+  hospdeptcode        ,
+  hospdeptname        ,
+  physiciancode       ,
+  physicianname       ,
+  medinscost          ,
+  paycost             ,
+  selfcost            ,
+  docserialtype       ,
+  mgbz,
+  FYGBBM,
+  FYGBMC,
+  stopdate            ,
+  detailoperationtype )
+VALUES
+ (#{option.id},
+  #{option.diaSerialCode},
+  #{option.docSerialCode},
+  #{option.productCode},
+  #{option.productName},
+  #{option.thrCatType},
+  #{option.reimLevel},
+  #{option.outHospTakMedicine},
+  #{option.unitPrice},
+  #{option.pnumber},
+  #{option.amount},
+  #{option.unit},
+  #{option.spec},
+  #{option.medDays},
+  #{option.dosage},
+  #{option.frequency},
+  #{option.cardNum},
+  #{option.outYardSign},
+  #{option.chargSign},
+  #{option.serviceDate},
+  #{option.hospDeptCode},
+  #{option.hospDeptName},
+  #{option.physicianCode},
+  #{option.physicianName},
+  #{option.medInsCost},
+  #{option.payCost},
+  #{option.selfCost},
+  #{option.docSerialType},
+  #{option.mgbz},
+  #{option.fygbbm},
+  #{option.fygbmc},
+  #{option.stopDate},
+  #{option.detailOperationType}
+ );
+ 		</foreach>
+ 	end;
+ 	</insert>
+ 
+</mapper>

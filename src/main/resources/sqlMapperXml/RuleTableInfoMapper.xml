@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.shuxin.mapper.RuleTableInfoMapper">
+
+  
+     <resultMap id="ruleTableResultMap" type="com.shuxin.model.RuleTableInfo">
+        <result column="id" property="id" jdbcType="VARCHAR"/>
+        <result column="table_name" property="tableName" jdbcType="VARCHAR"/>
+        <result column="rule_type" property="ruleType" jdbcType="VARCHAR"/>
+        <result column="is_used" property="isUsed" jdbcType="VARCHAR"/>
+       
+    </resultMap> 
+ <resultMap id="DictionaryResultMap" type="java.util.Map">
+    
+       <result column="id" property="id" jdbcType="VARCHAR"/>
+        <result column="table_name" property="tableName" jdbcType="VARCHAR"/>
+        <result column="rule_type" property="ruleType" jdbcType="VARCHAR"/>
+        <result column="is_used" property="isUsed" jdbcType="VARCHAR"/>
+
+ </resultMap>
+
+    <select id="selectRuleTableInfoDataGraid"  resultType="java.util.Map" >
+        SELECT
+       t.id  as "id",
+        t.table_name as "tableName",
+        t.rule_type as "ruleType" ,
+        t.is_used  as "isUsed",
+        t.menu_name  as "menuName",
+        p.p_name as  "ruleTypeName",
+        t.rule_code as "ruleCode"
+
+        FROM
+        T_RULE_TABLE_INFO t  ,T_PARAMETER p
+   
+        <where>
+         p.p_value=t.rule_type and p.p_type='ruleType'
+            <if test=" menuName!= null and menuName != '' ">
+                 and   t.menu_name like '%${menuName}%'
+            </if>   
+            <if test=" ruleType != null and ruleType != '' ">
+               and  t.rule_type =#{ruleType}
+            </if>
+            <if test=" isUsed != null and isUsed != '' ">
+              and   t.is_used =#{isUsed}
+            </if>
+        </where>
+   
+   
+   </select>
+   <update id="doRuleTable">
+   		create table ${param1}
+   		(
+   			id varchar2(32),
+   			create_time  DATE,
+		    create_user   VARCHAR2(32),
+		    update_time   DATE,
+		    update_user   VARCHAR2(32),
+   			${param2}
+   		)
+   </update>
+   <update id="doOperationTable">
+   		create table ${param1}_opt
+   		(
+   			id varchar2(32),
+   			create_time  DATE,
+		    create_user   VARCHAR2(32),
+		    update_time   DATE,
+		    update_user   VARCHAR2(32),
+		    opt_type VARCHAR2(10),
+   			${param2}
+   		)
+   </update>
+   
+   <select id="selectRuleTableInfoForMenuId" resultType="java.util.HashMap">
+   			select t.table_name,t.menu_name, c.column_name, c.column_type,c.th_name,c.html_input,c.dict_type, c.is_unique, c.is_filter
+			  from t_rule_table_info t, t_rule_column_info c
+			 where t.id = c.table_id
+			   and t.menu_id = #{menuId}
+			   order by c.order_seq
+   </select>
+   
+
+   <select id="checkTableName" resultType="java.lang.Integer">
+   	select count(*) from user_tables where table_name = #{tableName}
+   </select>
+   
+   <select id="selectRuleTableInfoAll" resultType="com.shuxin.model.RuleTableInfo">
+   		SELECT
+       		t.id  as "id",
+       		t.rule_code as "ruleCode",
+        	t.table_name as "tableName",
+        	t.rule_type as "ruleType" ,
+        	t.is_used  as "isUsed",
+        	t.menu_name  as "menuName",
+        	t.result_type as "resultType"
+        FROM t_rule_table_info t
+		WHERE t.is_used = '1'
+		and t.apply_type in('3',#{applyType})
+		order by t.rule_code
+   </select>
+ 
+</mapper>

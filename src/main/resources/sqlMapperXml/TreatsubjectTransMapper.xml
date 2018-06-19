@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.shuxin.mapper.TreatsubjectTransMapper" >
+ <resultMap id="TreatSubjectTransResultMap" type="java.util.Map">
+    
+       <result column="id" property="id" jdbcType="VARCHAR"/>
+        <result column="subject_code" property="subjectCode" jdbcType="VARCHAR"/>
+        <result column="definesubject_code" property="definesubjectCode" jdbcType="VARCHAR"/>
+        <result column="subject_name" property="subjectName" jdbcType="VARCHAR"/>
+        
+        <result column="message" property="message" jdbcType="VARCHAR"/>
+        <result column="update_time" property="updateTime" jdbcType="VARCHAR"/>
+        <result column="update_user" property="updateUser" jdbcType="VARCHAR"/>
+          <result column="opt_type" property="optType" jdbcType="VARCHAR"/>
+ </resultMap>
+ <select id="findTreatSubjectTransDataGrid" resultMap="TreatSubjectTransResultMap"    >
+   SELECT
+        t.id ,
+        t.subject_code  ,
+        t.definesubject_code ,
+        t.subject_name ,
+        t.message,  
+        t.update_time,  
+        t.update_user
+ 
+
+        FROM
+        t_treatsubject_trans t
+   
+        <where>
+            <if test=" subjectName!= null and subjectName != '' ">
+                   t.subject_name like '%${subjectName}%'
+            </if>   
+            <if test=" subjectCode != null and subjectCode!= '' ">
+               and    t.subject_code like '%${subjectCode}%'
+            </if>
+            <if test=" definesubjectCode != null and definesubjectCode!= '' ">
+               and   t.definesubject_code like '%${definesubjectCode}%'
+            </if>
+           
+        </where>
+      order by update_time desc,subject_code 
+  </select> 
+
+   <insert id="addTreatSubjectTransHistory">
+   		insert into t_treatsubject_trans_opt (ID ,subject_code,subject_name,definesubject_code,message,CREATE_TIME,CREATE_USER,UPDATE_TIME,UPDATE_USER,opt_type)
+   		select ID ,subject_code,subject_name,definesubject_code,message,sysdate,#{loginName},sysdate,#{loginName},#{optType} from t_treatsubject_trans
+   		where id=#{id}
+   </insert>
+   
+   <select id="selectDetailTreatsubjectTrans" resultMap="TreatSubjectTransResultMap" >
+     SELECT
+        t.id ,
+       t.subject_code  ,
+        t.definesubject_code ,
+        t.subject_name ,
+        t.message,  
+         to_char(t.update_time,'yyyy-mm-dd hh24:mi:ss') update_time,
+        t.update_user
+ 
+
+        FROM
+        t_treatsubject_trans t
+        
+        order by  t.update_time desc,t.subject_code
+   
+   </select>
+   <select id="selecTeatsubjectTransHistory" resultMap="TreatSubjectTransResultMap" >
+     SELECT
+        t.id ,
+       t.subject_code  ,
+        t.definesubject_code ,
+        t.subject_name ,
+        t.message,  
+        to_char(t.update_time,'yyyy-mm-dd hh24:mi:ss') update_time,
+        t.update_user,
+         t.opt_type
+       
+        FROM
+        t_treatsubject_trans_opt t
+        
+        order by  t.update_time desc,t.subject_code
+   
+   </select>
+    <update id="daoruData">
+	begin
+		<foreach collection="list" item="option" index="index" >
+		    insert into t_treatsubject_trans_opt (id,subject_code,definesubject_code,subject_name,message,opt_type,create_time,create_user,update_time,update_user)
+			select id,subject_code,definesubject_code,subject_name,message,'导入更新' opt_type, sysdate create_time,#{loginName} create_user,sysdate update_time,#{loginName} update_user
+			from  t_treatsubject_trans where subject_code =#{option.field0};
+			
+            insert into t_treatsubject_trans_opt(id,subject_code,definesubject_code,subject_name,message,opt_type,create_time,create_user,update_time,update_user)
+            select id,subject_code,definesubject_code,subject_name,message,'导入新增' opt_type,sysdate create_time,#{loginName} create_user,sysdate update_time,#{loginName} update_user from
+            (select #{option.field4} id, #{option.field0} subject_code,#{option.field1} definesubject_code,
+            #{option.field2}  subject_name,  #{option.field3}  message from dual) t  where not exists
+			(select 1 from t_treatsubject_trans t1 where t1.subject_code=t.subject_code);
+            
+            merge into t_treatsubject_trans t1
+            using (select #{option.field0} subject_code,#{option.field1} definesubject_code,
+            #{option.field2}  subject_name,  #{option.field3}  message from dual) t2
+            on (t1.subject_code=t2.subject_code)
+            WHEN MATCHED THEN
+               update set t1.definesubject_code=t2.definesubject_code,t1.subject_name=t2.subject_name,t1.message=t2.message,
+                        t1.update_time=sysdate,t1.update_user=#{loginName}
+            WHEN NOT MATCHED THEN
+               insert (id,subject_code,definesubject_code,subject_name,message,create_time,create_user,update_time,update_user)
+               VALUES
+              (#{option.field4},#{option.field0},#{option.field1},#{option.field2},#{option.field3},sysdate,#{loginName},sysdate,#{loginName});
+            
+        </foreach>
+	end;
+</update>
+
+<select id="selectDefineSubjectCode" resultType="java.lang.String">
+	select definesubject_code from t_treatsubject_trans
+	where subject_code in
+	<foreach item="code" index="index" collection="list" open="(" separator="," close=")">  
+            #{code}
+     </foreach>
+</select>
+
+</mapper>

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.shuxin.mapper.ruleengine.RuleXETMapper">
+
+<select id="selectLimitAgeInfo" resultType="java.util.HashMap">
+	select t.xmbm,to_number(t.xdnlnt) xdnlnt,t.tsxx,t.cblxbm from t_xet t
+	 where t.xmbm in
+	 <foreach item="hospitalClaim" index="index" collection="list" open="(" separator="," close=")">  
+          #{hospitalClaim.productCode}
+   	</foreach>
+</select>
+
+</mapper>

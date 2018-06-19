@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.shuxin.mapper.ruleengine.RuleXSYZYYMapper">
+	
+	<select id="selectIndicationCode_illegal" resultType="java.util.HashMap">
+		select to_char(t.xmbm) xmbm,t.xdsyzbm,t.tsxx,t.xjyfs,t.zlxm,t.cblxbm
+		 from t_xsyzyywg t where to_char(t.xmbm) in
+		<foreach item="claimDetail" index="index" collection="list" open="(" separator="," close=")">  
+                #{claimDetail.productCode}
+         </foreach>
+	</select>
+	
+	<select id="selectIndicationCode_suspicion" resultType="java.util.HashMap">
+		select to_char(t.xmbm) xmbm,t.xdsyzbm,t.tsxx,t.xjyfs,t.zlxm,t.cblxbm
+		 from t_xsyzyyky t where to_char(t.xmbm) in
+		<foreach item="claimDetail" index="index" collection="list" open="(" separator="," close=")">  
+                #{claimDetail.productCode}
+         </foreach>
+	</select>
+</mapper>

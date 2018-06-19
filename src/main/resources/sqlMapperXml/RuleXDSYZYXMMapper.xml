@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.shuxin.mapper.ruleengine.RuleXDSYZYXMMapper">
+
+<select id="selectIndicationProjectInfo" resultType="java.util.HashMap">
+	select t.xmbm,t.xdsyzbm,t.tsxx,t.zlxmbm from t_xdsyzyxm t 
+	where t.xmbm in
+	<foreach item="claimDetail" index="index" collection="list" open="(" separator="," close=")">  
+           #{claimDetail.productCode}
+    </foreach>
+</select>
+
+</mapper>

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.shuxin.mapper.ruleengine.RuleXDYPJGMapper">
+
+<select id="selectLimitProjectPrice" resultType="java.util.HashMap">
+select t.ypbm,t.ypjg,t.tsxx,t.lxgbsh,t.bcyshdcblx from t_xdypjg t
+ where t.ypbm in
+ <foreach item="claimDetail" index="index" collection="list" open="(" separator="," close=")">  
+                #{claimDetail.productCode}
+ </foreach>
+
+</select>
+
+</mapper>

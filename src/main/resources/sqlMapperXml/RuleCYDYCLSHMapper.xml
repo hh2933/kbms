@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.shuxin.mapper.ruleengine.RuleCYDYCLSHMapper">
+
+<select id="selectOutHospitalDrugInfo" resultType="java.util.HashMap">
+select t.ypbm,to_char(t.rcfzdl*t.mrxdts) maxNum,t.xdcblx,t.zxbzsl,t.mrxdts from t_cydyclsh t
+where t.ypbm in 
+ <foreach item="drug" index="index" collection="list" open="(" separator="," close=")">  
+      #{drug.productCode}
+ </foreach>
+</select>
+ 
+</mapper>

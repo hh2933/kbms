@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.shuxin.mapper.MinDrugTypeMapper">
+
+<select id="selectMinDrugTypeVoPage" resultType="java.util.HashMap">
+	select t.id,
+       t.drug_code,
+       t.drug_name,
+       t.miniType_code,
+       t.miniType_name
+  from T_minimumDrugType t
+  <where>
+  		<if test=" drugCode != null and drugCode != '' ">
+             drug_code like '%${drugCode}%'
+        </if>
+        <if test=" drugName != null and drugName != '' ">
+            and drug_name like '%${drugName}%'
+        </if>
+        <if test=" minTypeCode != null and minTypeCode != '' ">
+            and miniType_code like '%${minTypeCode}%'
+        </if>
+  </where>
+  		order by drug_code  
+</select>
+
+<select id="selectExistMinDrugType" resultType="java.lang.Integer">
+	select count(1) from T_minimumDrugType t where t.drug_code=#{drugCode} 
+     	<if test=" id != null and id != '' ">
+     		and id != #{id}
+     	</if>
+</select>
+
+<insert id="addMinDrugTypeHistory">
+	insert into T_minimumDrugType_opt
+  (id,
+   drug_code,
+   drug_name,
+   miniType_code,
+   miniType_name,   
+   opt_type,
+   create_time,
+   create_user,
+   update_time,
+   update_user)
+  select id,
+         drug_code,
+         drug_name,
+         miniType_code,
+   		 miniType_name,
+         #{optType} opt_type,
+         sysdate create_time,
+         #{loginName} create_user,
+         sysdate update_time,
+         #{loginName} update_user
+    from T_minimumDrugType t
+   where t.id in
+     <foreach item="id" index="index" collection="list" open="(" separator="," close=")">  
+            #{id}
+     </foreach>
+</insert>
+
+<select id="searchMinDrugTypeHistroy" resultType="java.util.HashMap">
+	select id,
+		   drug_code,
+		   drug_name,
+		   miniType_code,
+   		   miniType_name, 
+		   opt_type,
+       	   t.update_user,
+       	   to_char(t.update_time,'yyyy-mm-dd hh24:mi:ss') update_time
+  from T_minimumDrugType_opt t
+  order by t.update_time desc
+</select>
+
+<update id="importMinDrugType">
+	begin
+		<foreach collection="list" item="option" index="index" >
+		    insert into T_minimumDrugType_opt (id,drug_code,drug_name,miniType_code,miniType_name,opt_type,create_time,create_user,update_time,update_user)
+			select id,drug_code,drug_name,miniType_code,miniType_name,'导入更新' opt_type, sysdate create_time,#{loginName} create_user,sysdate update_time,#{loginName} update_user
+			from T_minimumDrugType where drug_code =#{option.field0};
+						
+            insert into T_minimumDrugType_opt(id,drug_code,drug_name,miniType_code,miniType_name,opt_type,create_time,create_user,update_time,update_user)
+            select id,drug_code,drug_name,miniType_code,miniType_name,'导入新增' opt_type,sysdate create_time,#{loginName} create_user,sysdate update_time,#{loginName} update_user from
+            (select #{option.field4} id, #{option.field0} drug_code,#{option.field1} drug_name,#{option.field2} miniType_code,#{option.field3} miniType_name
+             from dual) t where not exists
+			(select 1 from T_minimumDrugType t1 where t1.drug_code=t.drug_code);
+                        
+            merge into T_minimumDrugType t1
+            using (select #{option.field0} drug_code,#{option.field1} drug_name,#{option.field2} miniType_code,#{option.field3} miniType_name from dual) t2
+            on (t1.drug_code=t2.drug_code)
+            WHEN MATCHED THEN
+               update set t1.drug_name=t2.drug_name,t1.miniType_code=t2.miniType_code,t1.miniType_name=t2.miniType_name,
+                         t1.update_time=sysdate,t1.update_user=#{loginName}
+            WHEN NOT MATCHED THEN
+               insert (id,drug_code,drug_name,miniType_code,miniType_name,create_time,create_user,update_time,update_user)
+               VALUES
+               (#{option.field4},#{option.field0},#{option.field1},#{option.field2},#{option.field3},sysdate,#{loginName},sysdate,#{loginName});
+              
+        </foreach>
+	end;
+</update>
+
+<select id="selectMinDrugTypeForDrugCode" resultType="java.util.HashMap">
+	select MINITYPE_CODE,DRUG_CODE from T_minimumDrugType where drug_code in
+	<foreach item="drugCode" index="index" collection="list" open="(" separator="," close=")">  
+          #{drugCode}
+   	</foreach>
+</select>
+
+</mapper>

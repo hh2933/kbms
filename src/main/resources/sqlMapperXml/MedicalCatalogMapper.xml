@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.shuxin.mapper.MedicalCatalogMapper">
+	
+	<sql id="search">
+		<where>
+			<if test=" yblx != null and yblx != '0'.toString() ">
+				<choose>
+					<when test=" yblx == 1 "> and yblx = '门诊统筹' 	</when>
+					<when test=" yblx == 2 "> and yblx = '市医保' 	</when>
+					<when test=" yblx == 3 "> and yblx = '省医保' 	</when>
+					<when test=" yblx == 4 "> and yblx = '工伤'	 	</when>
+				</choose>
+			</if>
+			<if test=" czlx != null and czlx != '00'.toString() ">
+				and czlx = #{czlx}
+			</if>
+			<if test=" clzt != null and clzt != '00'.toString() ">
+				<choose>
+					<when test=" clzt == 0 "> and clzt = '0' or clzt is null</when>
+					<when test=" clzt == 1 "> and clzt = '1' </when>
+				</choose>
+			</if>
+			<if test=" yyxmbm != null and yyxmbm != '' ">
+				and yyxmbm = #{yyxmbm}
+			</if>
+			<if test=" ybxmbm != null and ybxmbm != '' ">
+				and ybxmbm = #{ybxmbm}
+			</if>
+			<if test=" xmmc != null and xmmc != '' ">
+				and xmmc like '%${xmmc}%'
+			</if>
+		</where>		
+	</sql>
+	
+	<select id="getCatalogTableInfo" resultType="map">
+		select * from ods_key_result
+		<include refid="search"></include>
+		order by tbsj desc,clsj desc
+	</select>
+	
+	<update id="updateClztIn1">
+		update ods_key_result set clzt = 1 ,clsj = sysdate
+		<foreach collection="list" open="where r_id in (" close=")" item="item" separator=",">
+			 #{item}
+		</foreach>
+	</update>
+	
+	<update id="updateClztIn0">
+		update ods_key_result set clzt = 0 ,clsj = sysdate
+		<foreach collection="list" open="where r_id in (" close=")" item="item" separator=",">
+			 #{item}
+		</foreach>
+	</update>
+	
+	<select id="getCatalogExportInfo" resultType="map">
+		select
+			yyxmbm 
+		    ,ybxmbm 
+		    ,xmmc   
+		    ,yblx 
+		    ,bzxx   
+		    ,zfbl   
+		    ,decode(czlx,'0','新增','1','修改','2','删除','-') as czlx  
+		    ,decode(clzt,'0','未处理','1','处理','-')   as clzt
+		    ,tbsj   
+		    ,clsj   
+		from
+			ods_key_result
+		<include refid="search"></include>
+		order by tbsj desc,clsj desc
+	</select>
+	
+	<select id="getYpzdDetails" resultType="map">
+		select 
+			t.ypgg as gg
+			,t.yfdw as dw
+			,t.jx
+			,t.lsjg as jg
+			, nvl(ybbm,szyyxmbm) as bm 
+		from PORTAL_HIS.VI_YBY_YPXX t  
+		 <foreach collection="list" item="item" close=")" open="where nvl(ybbm,szyyxmbm) in (" separator=",">
+		 	#{item}
+		 </foreach>
+	</select>
+	
+	
+	<select id="getYlzdDetails" resultType="map">
+		select 
+			t.fydw as dw
+			,t.fydj as jg 
+			,nvl(yyxmbm,szyyxmbm) as bm 
+		from PORTAL_HIS.VI_YBY_YLSF t 
+		 <foreach collection="list" item="item" close=")" open="where nvl(yyxmbm,szyyxmbm) in (" separator=",">
+		 	#{item}
+		 </foreach>
+	</select>
+	
+	
+	
+	
+</mapper>

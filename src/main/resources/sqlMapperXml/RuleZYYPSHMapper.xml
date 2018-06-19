@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.shuxin.mapper.ruleengine.RuleZYYPSHMapper">
+
+<select id="selectPiecesExamineInfo" resultType="java.util.HashMap">
+	<!--  select t.CFLX,t.TSXX from t_zyypsh t
+ 	where to_char(t.XMBM) =#{drugCode} or t.YBYPTDBM=#{drugCode}  -->
+ 	
+ 	select t.CFLX,t.TSXX ,to_char(t.XMBM) XMBM,t.YBYPTDBM  from t_zyypsh t
+</select>
+
+<select  id="selectCountByDrugCode" resultType="java.lang.Integer">
+	select count(*) from t_zyypsh t where to_char(t.XMBM) in
+	<foreach item="drugCode" collection="list" index="index" open="(" separator="," close=")">
+			#{drugCode}
+	</foreach>
+
+</select>
+
+</mapper>

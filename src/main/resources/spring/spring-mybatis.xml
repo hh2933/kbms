@@ -1,0 +1,196 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+    http://www.springframework.org/schema/beans/spring-beans.xsd
+    http://www.springframework.org/schema/aop
+    http://www.springframework.org/schema/aop/spring-aop.xsd
+    http://www.springframework.org/schema/tx
+    http://www.springframework.org/schema/tx/spring-tx.xsd">
+
+    <!-- base dataSource -->
+    <bean id="dataSource_wuhan" class="com.alibaba.druid.pool.DruidDataSource" init-method="init" destroy-method="close">
+        <property name="url" value="${db.master.url}" />
+        <property name="username" value="${db.master.user1}" />
+        <property name="password" value="${db.master.password1}" />
+        
+        <!-- 配置监控统计拦截的filters -->
+        <property name="filters" value="mergeStat,wall,log4j2" />
+        
+        <property name="initialSize" value="5" />
+        <property name="maxActive" value="100" />
+        <property name="minIdle" value="10" />
+        <property name="maxWait" value="60000" />
+        <!-- <property name="validationQuery" value="SELECT 'x'" /> --> <!-- MYSQL -->
+        <property name="validationQuery" value="select 1 from dual" /> <!-- ORACLE -->
+        <property name="testOnBorrow" value="true" />
+        <property name="testOnReturn" value="true" />
+        <property name="testWhileIdle" value="true" />
+        <property name="timeBetweenEvictionRunsMillis" value="60000" />
+        <property name="minEvictableIdleTimeMillis" value="300000" />
+        <property name="removeAbandoned" value="true" />
+        <property name="removeAbandonedTimeout" value="1800" />
+        <property name="logAbandoned" value="true" />
+    </bean>
+    
+<!--    <bean id="dataSource_jinan" class="com.alibaba.druid.pool.DruidDataSource" init-method="init" destroy-method="close">
+        <property name="url" value="${db.master.url}" />
+        <property name="username" value="${db.master.user2}" />
+        <property name="password" value="${db.master.password2}" />
+        
+        &lt;!&ndash; 配置监控统计拦截的filters &ndash;&gt;
+        <property name="filters" value="mergeStat,wall,log4j2" />
+        
+        <property name="initialSize" value="5" />
+        <property name="maxActive" value="100" />
+        <property name="minIdle" value="10" />
+        <property name="maxWait" value="60000" />
+        &lt;!&ndash; <property name="validationQuery" value="SELECT 'x'" /> &ndash;&gt; &lt;!&ndash; MYSQL &ndash;&gt;
+        <property name="validationQuery" value="select 1 from dual" /> &lt;!&ndash; ORACLE &ndash;&gt;
+        <property name="testOnBorrow" value="true" />
+        <property name="testOnReturn" value="true" />
+        <property name="testWhileIdle" value="true" />
+        <property name="timeBetweenEvictionRunsMillis" value="60000" />
+        <property name="minEvictableIdleTimeMillis" value="300000" />
+        <property name="removeAbandoned" value="true" />
+        <property name="removeAbandonedTimeout" value="1800" />
+        <property name="logAbandoned" value="true" />
+    </bean>-->
+    
+     <!-- <bean id="dataSource_ybkf" class="com.alibaba.druid.pool.DruidDataSource" init-method="init" destroy-method="close">
+        <property name="url" value="${db.master.url_ybkf}" />
+        <property name="username" value="${db.master.user_ybkf}" />
+        <property name="password" value="${db.master.password_ybkf}" />
+        
+        <property name="filters" value="mergeStat,wall,log4j2" />
+        
+        <property name="initialSize" value="5" />
+        <property name="maxActive" value="100" />
+        <property name="minIdle" value="10" />
+        <property name="maxWait" value="60000" />
+        <property name="validationQuery" value="select 1 from dual" /> 
+        <property name="testOnBorrow" value="true" />
+        <property name="testOnReturn" value="true" />
+        <property name="testWhileIdle" value="true" />
+        <property name="timeBetweenEvictionRunsMillis" value="60000" />
+        <property name="minEvictableIdleTimeMillis" value="300000" />
+        <property name="removeAbandoned" value="true" />
+        <property name="removeAbandonedTimeout" value="1800" />
+        <property name="logAbandoned" value="true" />
+    </bean>
+    
+    <bean id="dataSource_64" class="com.alibaba.druid.pool.DruidDataSource" init-method="init" destroy-method="close">
+        <property name="url" value="${db.master.url_64}" />
+        <property name="username" value="${db.master.user_64}" />
+        <property name="password" value="${db.master.password_64}" />
+        
+        <property name="filters" value="mergeStat,wall,log4j2" />
+        
+        <property name="initialSize" value="5" />
+        <property name="maxActive" value="100" />
+        <property name="minIdle" value="10" />
+        <property name="maxWait" value="60000" />
+        <property name="validationQuery" value="select 1 from dual" /> 
+        <property name="testOnBorrow" value="true" />
+        <property name="testOnReturn" value="true" />
+        <property name="testWhileIdle" value="true" />
+        <property name="timeBetweenEvictionRunsMillis" value="60000" />
+        <property name="minEvictableIdleTimeMillis" value="300000" />
+        <property name="removeAbandoned" value="true" />
+        <property name="removeAbandonedTimeout" value="1800" />
+        <property name="logAbandoned" value="true" />
+    </bean>
+    
+    <bean id="dataSource_his" class="com.alibaba.druid.pool.DruidDataSource" init-method="init" destroy-method="close">
+        <property name="url" value="${db.master.url_his}" />
+        <property name="username" value="${db.master.user_his}" />
+        <property name="password" value="${db.master.password_his}" />
+        
+        <property name="filters" value="mergeStat,wall,log4j2" />
+        
+        <property name="initialSize" value="5" />
+        <property name="maxActive" value="100" />
+        <property name="minIdle" value="10" />
+        <property name="maxWait" value="60000" />
+        <property name="validationQuery" value="select 1 from dual" /> 
+        <property name="testOnBorrow" value="true" />
+        <property name="testOnReturn" value="true" />
+        <property name="testWhileIdle" value="true" />
+        <property name="timeBetweenEvictionRunsMillis" value="60000" />
+        <property name="minEvictableIdleTimeMillis" value="300000" />
+        <property name="removeAbandoned" value="true" />
+        <property name="removeAbandonedTimeout" value="1800" />
+        <property name="logAbandoned" value="true" />
+    </bean>  -->
+    
+   
+    
+    <bean id="dynamicDataSource" class="com.shuxin.commons.datasource.DynamicDataSource">  
+     <property name="targetDataSources">  
+         <map key-type="java.lang.String">
+             <!-- 指定lookupKey和与之对应的数据源 -->
+             <entry key="dataSource_wuhan" value-ref="dataSource_wuhan"></entry>  
+             <!--<entry key="dataSource_jinan" value-ref="dataSource_jinan"></entry> -->
+             <!-- <entry key="dataSource_ybkf" value-ref="dataSource_ybkf"></entry> 
+             <entry key="dataSource_64" value-ref="dataSource_64"></entry> 
+             <entry key="dataSource_his" value-ref="dataSource_his"></entry>  -->
+         </map>  
+     </property>  
+     <!-- 这里可以指定默认的数据源 -->
+     <property name="defaultTargetDataSource" ref="dataSource_wuhan" />  
+ </bean>  
+
+    <!-- Spring整合Mybatis -->
+    <bean id="sqlSessionFactory" class="com.baomidou.mybatisplus.spring.MybatisSqlSessionFactoryBean">
+        <property name="dataSource" ref="dynamicDataSource"/>
+        <!-- 自动扫描Mapping.xml文件 -->
+        <property name="mapperLocations">
+        	<array>
+        		<value>classpath*:/sqlMapperXml/*.xml</value>
+        		<value>classpath*:/sqlMapperXml/**/*.xml</value>
+        	</array>
+        </property>
+        <property name="configLocation" value="classpath:xml/mybatis-config.xml"></property>
+        <property name="typeAliasesPackage" value="com.shuxin.model"/>
+        <property name="plugins">
+            <array>
+                <!-- 分页插件配置 -->
+                <bean id="paginationInterceptor" class="com.baomidou.mybatisplus.plugins.PaginationInterceptor">
+                    <property name="dialectType" value="oracle"/>
+                </bean>
+            </array>
+        </property>
+    </bean>
+
+    <!-- MyBatis 动态实现  -->
+    <bean id="mapperScannerConfigurer" class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+        <!-- 对Dao 接口动态实现，需要知道接口在哪  -->
+        <property name="basePackage" value="com.shuxin.mapper"/>
+    </bean>
+
+    <!-- 事务管理 -->
+    <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+        <property name="dataSource" ref="dynamicDataSource"></property>
+    </bean>
+    <!-- 事务注解 -->
+    <tx:annotation-driven transaction-manager="transactionManager" proxy-target-class="true"/>
+    <!-- 事务管理 属性 -->
+    <tx:advice id="transactionAdvice" transaction-manager="transactionManager">
+        <tx:attributes>
+        	<tx:method name="create*" propagation="REQUIRED" rollback-for="Exception" /> 
+        	<tx:method name="edit*" propagation="REQUIRED" rollback-for="Exception" />  
+        	<tx:method name="del*" propagation="REQUIRED" rollback-for="Exception" />  
+        	<tx:method name="import*" propagation="REQUIRED" rollback-for="Exception" />         
+            <tx:method name="select*" propagation="REQUIRED" read-only="true" />
+            
+            
+        </tx:attributes>
+    </tx:advice>
+
+    <!-- 配置切面 -->
+    <aop:config expose-proxy="true" proxy-target-class="true">
+        <aop:advisor advice-ref="transactionAdvice" pointcut="execution(* com.shuxin.service..*.*(..))"/>
+    </aop:config>
+</beans>

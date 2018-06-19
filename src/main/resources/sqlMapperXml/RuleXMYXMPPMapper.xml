@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.shuxin.mapper.ruleengine.RuleXMYXMPPMapper">
+
+	<select id="selectProjectMappingInfo" resultType="java.util.HashMap">
+		<!--  select t.XMBMZA, t.dyxmbmzb, t.tsxx,t.cxbzdsj,t.sfshlxgb,t.xdks,t.sfshmz,t.sfshzy,p.project_code
+		  from t_xmyxmpp t, t_projects_mapping p
+		 where t.XMBMZA = p.project_group_code
+		   and p.project_code in 
+		   <foreach item="hospitalClaim" index="index" collection="list" open="(" separator="," close=")">  
+		          #{hospitalClaim.productCode}
+		   </foreach>   -->
+		   
+		   select t.XMBMZA, t.dyxmbmzb, t.tsxx,t.cxbzdsj,t.sfshlxgb,t.xdks,t.sfshmz,t.sfshzy,p.project_code
+		  from t_xmyxmpp t, t_projects_mapping p
+		 where t.XMBMZA = p.project_group_code
+		   
+	</select>
+
+</mapper>

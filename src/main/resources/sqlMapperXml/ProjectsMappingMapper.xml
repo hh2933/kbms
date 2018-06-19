@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.shuxin.mapper.ProjectsMappingMapper">
+	
+	<select id="selectProjectsMappingVoPage" resultType="java.util.HashMap">
+		select t.id,
+	       t.project_code,
+	       t.project_group_code,
+	       t.project_name,
+	       t.is_check_b_project,
+	       t.update_user,
+	       to_char(t.update_time,'yyyy-mm-dd hh24:mi:ss') update_time
+	  from t_projects_mapping t
+	  <where>
+	  		<if test=" projectCode != null and projectCode != '' ">
+	             project_code like '%${projectCode}%'
+	        </if>
+	        <if test=" projectName != null and projectName != '' ">
+	            and project_name like '%${projectName}%'
+	        </if>
+	         <if test=" projectGroupCode != null and projectGroupCode != '' ">
+	            and project_group_code like '%${projectGroupCode}%'
+	        </if>
+	  </where>
+	  		order by project_group_code  
+	</select>
+	
+	<select id="selectExistProjectsMapping" resultType="java.lang.Integer">
+		select count(1) from t_projects_mapping t
+		where  t.project_code=#{projectCode}  and t.project_group_code=#{projectGroupCode}
+		<if test=" id != null and id != '' ">
+	   		and id != #{id}
+	   	</if>
+	</select>
+	
+	<insert id="addProjectsMappingHistory">
+		insert into t_projects_mapping_opt
+		(
+			id,
+			PROJECT_GROUP_CODE,
+			PROJECT_CODE,
+			PROJECT_NAME,
+			IS_CHECK_B_PROJECT,
+			OPT_TYPE,
+			create_time,
+		   create_user,
+		   update_time,
+		   update_user
+		)
+		select
+			id,
+			PROJECT_GROUP_CODE,
+			PROJECT_CODE,
+			PROJECT_NAME,
+			IS_CHECK_B_PROJECT,
+			 #{optType} opt_type,
+			 sysdate create_time,
+        	 #{loginName} create_user,
+         	sysdate update_time,
+         	#{loginName} update_user
+         	from t_projects_mapping
+         	where id in
+         	 <foreach item="id" index="index" collection="list" open="(" separator="," close=")">  
+            	#{id}
+    		 </foreach>
+	</insert>
+	
+	<select id="selectProjectsMappingHistory" resultType="java.util.HashMap">
+		select 	PROJECT_GROUP_CODE,
+			PROJECT_CODE,
+			PROJECT_NAME,
+			IS_CHECK_B_PROJECT,
+			OPT_TYPE,
+			update_user,
+       		to_char(update_time,'yyyy-mm-dd hh24:mi:ss') update_time
+       		from t_projects_mapping_opt
+       		order by update_time desc
+	</select>
+	
+	<update id="importProjectsMapping">
+	begin
+		<foreach collection="list" item="option" index="index" >
+		    insert into t_projects_mapping_opt (id,PROJECT_GROUP_CODE,PROJECT_CODE,PROJECT_NAME,IS_CHECK_B_PROJECT,opt_type,create_time,create_user,update_time,update_user)
+			select id,PROJECT_GROUP_CODE,PROJECT_CODE,PROJECT_NAME,IS_CHECK_B_PROJECT,'导入更新' opt_type, sysdate create_time,#{loginName} create_user,sysdate update_time,#{loginName} update_user
+			from t_projects_mapping where PROJECT_CODE =#{option.field1} and PROJECT_GROUP_CODE=#{option.field0};
+			
+			insert into t_projects_mapping_opt (id,PROJECT_GROUP_CODE,PROJECT_CODE,PROJECT_NAME,IS_CHECK_B_PROJECT,opt_type,create_time,create_user,update_time,update_user)
+			select id,PROJECT_GROUP_CODE,PROJECT_CODE,PROJECT_NAME,IS_CHECK_B_PROJECT,'导入新增' opt_type,sysdate create_time,#{loginName} create_user,sysdate update_time,#{loginName} update_user from
+			(select #{option.field4} id,#{option.field0} PROJECT_GROUP_CODE,#{option.field1} PROJECT_CODE,#{option.field2} PROJECT_NAME
+			,upper(#{option.field3}) IS_CHECK_B_PROJECT from dual) t where not exists
+			(select 1 from t_projects_mapping t1 where t1.PROJECT_CODE=t.PROJECT_CODE and t1.PROJECT_GROUP_CODE=t.PROJECT_GROUP_CODE);			
+			
+            merge into t_projects_mapping t1
+            using (select #{option.field0} PROJECT_GROUP_CODE,#{option.field1} PROJECT_CODE,#{option.field2} PROJECT_NAME
+			,upper(#{option.field3}) IS_CHECK_B_PROJECT from dual) t2
+            on (t1.PROJECT_CODE=t2.PROJECT_CODE and t1.PROJECT_GROUP_CODE=t2.PROJECT_GROUP_CODE)
+            WHEN MATCHED THEN
+               update set t1.PROJECT_NAME=t2.PROJECT_NAME,
+                          t1.IS_CHECK_B_PROJECT=t2.IS_CHECK_B_PROJECT,t1.update_time=sysdate,t1.update_user=#{loginName}
+            WHEN NOT MATCHED THEN
+               insert (id,PROJECT_GROUP_CODE,PROJECT_CODE,PROJECT_NAME,IS_CHECK_B_PROJECT,create_time,create_user,update_time,update_user)
+               VALUES
+               (#{option.field4},#{option.field0},#{option.field1},#{option.field2},upper(#{option.field3}),sysdate,#{loginName},sysdate,#{loginName});
+              
+        </foreach>
+		end;
+	</update>
+	
+	<select id="selectBProjectMappingInfo" resultType="java.lang.String">
+		select PROJECT_GROUP_CODE from t_projects_mapping where PROJECT_CODE in
+		 <foreach item="hospitalClaim" index="index" collection="list" open="(" separator="," close=")">  
+	          #{hospitalClaim.productCode}
+	     </foreach>
+	     and PROJECT_GROUP_CODE like 'B%'
+	</select>
+	
+	<select id="selectBProjectMappingInfoInHos" resultType="java.util.HashMap">
+		select PROJECT_GROUP_CODE ,PROJECT_CODE from t_projects_mapping where 
+	      PROJECT_GROUP_CODE like 'B%'
+	</select>
+	
+	<select id="selectBProjectMappingHistoryInfo" resultType="java.lang.String">
+		select t.PROJECT_GROUP_CODE from t_projects_mapping t,T_CHARGE_DETAILS c, T_PATIENT_INFORMATION p
+		where c.diaserialcode = p.diaserialcode
+		        and c.productcode=t.project_code
+				and p.PATCODE =#{patCode}
+		        and c.servicedate between to_date(#{fromDate},'yyyy-mm-dd') and to_date(#{toDate},'yyyy-mm-dd')
+		        and t.PROJECT_GROUP_CODE like 'B%'
+	</select>
+	
+</mapper>

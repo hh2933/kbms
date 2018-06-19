@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.shuxin.mapper.ruleengine.RuleYQYCLQYMapper">
+
+	<select id="selectMonthOverPrescription" resultType="java.util.HashMap">
+		 select t.YPBM,to_number(t.ZXBZSL) ZXBZSL,to_number(t.RCFZDL) RCFZDL,
+		 to_number(t.MRXDTS) MRXDTS, t.BZXDTSSD,t.XDCBLX from  t_yqyclqy t
+		 where t.YPBM in 
+		 <foreach item="drug" index="index" collection="list" open="(" separator="," close=")">  
+            #{drug.productCode}
+     	 </foreach>
+	</select>
+
+</mapper>

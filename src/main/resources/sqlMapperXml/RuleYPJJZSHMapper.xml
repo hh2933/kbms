@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.shuxin.mapper.ruleengine.RuleYPJJZSHMapper">
+
+<select id="selectDrugTabooInfo" resultType="java.util.HashMap">
+	select t.ypbm,t.jbjj from t_ypjjzsh t where
+	t.ypbm in
+	<foreach item="hospitalClaim" index="index" collection="list" open="(" separator="," close=")">  
+          #{hospitalClaim.productCode}
+   	</foreach>
+</select>
+
+</mapper>

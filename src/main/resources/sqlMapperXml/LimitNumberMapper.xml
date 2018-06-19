@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.shuxin.mapper.LimitNumberMapper">
+	
+	<select id="selectLimitNumberVoPage" resultType="java.util.HashMap">
+		select 
+		    id,
+		    group_code,
+		    PROJECT_CODE,
+		    PROJECT_NAME,
+		    REMARK,
+		    t.update_user,
+	       to_char(t.update_time,'yyyy-mm-dd hh24:mi:ss') update_time
+	       from t_limit_number_mapping t
+	       <where>
+		       <if test=" projectCode != null and projectCode != '' ">
+		             project_code like '%${projectCode}%'
+		        </if>
+		        <if test=" projectName != null and projectName != '' ">
+		            and project_name like '%${projectName}%'
+		        </if>
+		         <if test=" groupCode != null and groupCode != '' ">
+		            and group_code like '%${groupCode}%'
+		        </if>
+	        </where>
+	        order by project_code
+	</select>
+	
+	<select id="selectExistLimitNumber" resultType="java.lang.Integer">
+		select count(1) from t_limit_number_mapping t
+		where  t.project_code=#{projectCode} and t.group_code=#{groupCode}
+		<if test=" id != null and id != '' ">
+	   		and id != #{id}
+	   	</if>
+	</select>
+	
+	<insert id="addLimitNumberHistory">
+		insert into t_limit_number_mapping_opt
+		(
+			id,
+			GROUP_CODE,
+		    PROJECT_CODE,
+		    PROJECT_NAME,
+		    remark,
+		    OPT_TYPE,
+			create_time,
+		   create_user,
+		   update_time,
+		   update_user
+		)
+		select
+		    id,
+			GROUP_CODE,
+		    PROJECT_CODE,
+		    PROJECT_NAME,
+		    remark,
+		     #{optType} opt_type,
+			 sysdate create_time,
+        	 #{loginName} create_user,
+         	sysdate update_time,
+         	#{loginName} update_user
+         	from t_limit_number_mapping t
+         	where id in
+         	<foreach item="id" index="index" collection="list" open="(" separator="," close=")">  
+            	#{id}
+    		</foreach>
+	</insert>	
+	
+	<select id="selectLimitNumberHistory" resultType="java.util.HashMap">
+		select id,
+			GROUP_CODE,
+		    PROJECT_CODE,
+		    PROJECT_NAME,
+		    remark,
+		    OPT_TYPE,
+		     t.update_user,
+	       to_char(t.update_time,'yyyy-mm-dd hh24:mi:ss') update_time
+	        from t_limit_number_mapping_opt t
+	        order by update_time desc
+	</select>
+	
+	<update id="importLimitNumber">
+	begin
+		<foreach collection="list" item="option" index="index" >
+		    insert into t_limit_number_mapping_opt (id,group_code,PROJECT_CODE,PROJECT_NAME,remark,opt_type,create_time,create_user,update_time,update_user)
+			select id,group_code,PROJECT_CODE,PROJECT_NAME,remark,'导入更新' opt_type, sysdate create_time,#{loginName} create_user,sysdate update_time,#{loginName} update_user
+			from t_limit_number_mapping where PROJECT_CODE =#{option.field1} and group_code =#{option.field0};
+			
+			insert into t_limit_number_mapping_opt (id,group_code,PROJECT_CODE,PROJECT_NAME,remark,opt_type,create_time,create_user,update_time,update_user)
+			select id,group_code,PROJECT_CODE,PROJECT_NAME,remark,'导入新增' opt_type,sysdate create_time,#{loginName} create_user,sysdate update_time,#{loginName} update_user from
+			(select #{option.field4} id,#{option.field0} group_code,#{option.field1} PROJECT_CODE,#{option.field2} PROJECT_NAME
+			,#{option.field3} remark from dual) t where not exists
+			(select 1 from t_limit_number_mapping t1 where t1.PROJECT_CODE=t.PROJECT_CODE and t1.group_code=t.group_code);			
+			
+            merge into t_limit_number_mapping t1
+            using (select #{option.field0} group_code,#{option.field1} PROJECT_CODE,#{option.field2} PROJECT_NAME
+			,#{option.field3} remark  from dual) t2
+            on (t1.PROJECT_CODE=t2.PROJECT_CODE and t1.group_code=t2.group_code)
+            WHEN MATCHED THEN
+               update set t1.PROJECT_NAME=t2.PROJECT_NAME,
+                          t1.remark=t2.remark,t1.update_time=sysdate,t1.update_user=#{loginName}
+            WHEN NOT MATCHED THEN
+               insert (id,group_code,PROJECT_CODE,PROJECT_NAME,remark,create_time,create_user,update_time,update_user)
+               VALUES
+               (#{option.field4},#{option.field0},#{option.field1},#{option.field2},#{option.field3},sysdate,#{loginName},sysdate,#{loginName});
+              
+        </foreach>
+		end;
+	</update>
+	
+	<select id="selectProjectMappingInfo" resultType="java.util.HashMap">
+		select m.group_code,m.project_code from t_limit_number_mapping m
+		 where m.project_code in
+		 <foreach item="hospitalClaim" index="index" collection="list" open="(" separator="," close=")">  
+	          #{hospitalClaim.productCode}
+	   	</foreach>
+	   	  and m.group_code like 'R%'
+	</select>
+	
+</mapper>

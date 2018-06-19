@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.shuxin.mapper.catalog.YPMLMapper">
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        t.id, t.ybypbm, t.yyypbm, t.yyypmc, t.yplx, t.jx, t.gg, t.dw, t.jg, t.zxbz, t.sccs, t.zfbl, t.gytj, t.sm, t.drsj, t.jxzt, t.jxjg,t.jxjgms, t.yjxsm, t.wnjxsm
+    </sql>
+
+    <select id="selectExist" resultType="java.lang.Integer">
+        select count(1) from M_YPML t
+        <where>
+            <if test=" id != null and id != '' ">
+                and id = #{id}
+            </if>
+            <if test=" ybypbm != null and ybypbm != '' ">
+                and ybypbm = #{ybypbm}
+            </if>
+            <if test=" yyypbm != null and yyypbm != '' ">
+                and yyypbm = #{yyypbm}
+            </if>
+            <if test=" yyypmc != null and yyypmc != '' ">
+                and yyypmc = #{yyypmc}
+            </if>
+            <if test=" yplx != null ">
+                and yplx = #{yplx}
+            </if>
+            <if test=" jx != null and jx != '' ">
+                and jx = #{jx}
+            </if>
+            <if test=" gg != null and gg != '' ">
+                and gg = #{gg}
+            </if>
+            <if test=" dw != null and dw != '' ">
+                and dw = #{dw}
+            </if>
+            <if test=" jg != null">
+                and jg = #{jg}
+            </if>
+            <if test=" zxbz != null ">
+                and zxbz = #{zxbz}
+            </if>
+            <if test=" sccs != null and sccs != '' ">
+                and sccs = #{sccs}
+            </if>
+            <if test=" zfbl != null ">
+                and zfbl = #{zfbl}
+            </if>
+            <if test=" gytj != null and gytj != '' ">
+                and gytj = #{gytj}
+            </if>
+            <if test=" sm != null and sm != '' ">
+                and sm = #{sm}
+            </if>
+        </where>
+    </select>
+
+    <select id="selectPage" resultType="java.util.HashMap">
+        SELECT <include refid="Base_Column_List"></include>
+        from M_YPML t
+        <where>
+            <if test=" ybypbm != null and ybypbm != '' ">
+                ybypbm like '%${ybypbm}%'
+            </if>
+            <if test=" yyypmc != null and yyypmc != '' ">
+                and yyypmc like '%${yyypmc}%'
+            </if>
+        </where>
+    </select>
+
+    <select id="selectAllSet" resultType="com.shuxin.model.catalog.YPML">
+        SELECT t.ybypbm, t.yyypbm, t.yyypmc, t.yplx, t.jx, t.gg, t.dw, t.jg, t.zxbz, t.sccs, t.zfbl, t.gytj, t.sm
+        from M_YPML t
+    </select>
+
+</mapper>

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.shuxin.mapper.ruleengine.RuleXDDCXMSLMapper">
+
+<select id="selectSingleProjectLimitInfo" resultType="java.util.HashMap">
+	 select l.project_code, t.sjqjt,t.xdslgs,t.tsxx from t_xddcxmsl t,t_limit_number_mapping l 
+     where l.group_code=t.fz and l.group_code like 'D%' 
+     and l.project_code in 
+     <foreach item="hospitalClaim" index="index" collection="list" open="(" separator="," close=")">  
+          #{hospitalClaim.productCode}
+   	</foreach>
+</select>
+
+</mapper>

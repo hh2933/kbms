@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.shuxin.mapper.DrgsMapper" >
+ <resultMap id="DrgsResultMap" type="java.util.Map">
+    
+       <result column="id" property="id" jdbcType="VARCHAR"/>
+        <result column="bzfl" property="bzfl" jdbcType="VARCHAR"/>
+        <result column="bzxh" property="bzxh" jdbcType="VARCHAR"/>
+        <result column="bzbm" property="bzbm" jdbcType="VARCHAR"/>
+        <result column="bzmc" property="bzmc" jdbcType="VARCHAR"/>
+        <result column="bzlx" property="bzlx" jdbcType="VARCHAR"/>
+        <result column="zlfsbm" property="zlfsbm" jdbcType="VARCHAR"/>
+        <result column="zlfsmc" property="zlfsmc" jdbcType="VARCHAR"/>
+          <result column="ylzfyxe" property="ylzfyxe" jdbcType="VARCHAR"/>
+          <result column="ybtczfxe" property="ybtczfxe" jdbcType="VARCHAR"/>
+          <result column="xdzysj" property="xdzysj" jdbcType="VARCHAR"/>
+          <result column="bxbl" property="bxbl" jdbcType="VARCHAR"/>
+          <result column="starttime" property="starttime" jdbcType="VARCHAR"/>
+          <result column="endtime" property="endtime" jdbcType="VARCHAR"/>
+          <result column="flbm" property="flbm" jdbcType="VARCHAR"/>
+          <result column="fl" property="fl" jdbcType="VARCHAR"/>
+ </resultMap>
+ <select id="selectDrgsByCondition" resultMap="DrgsResultMap"    >
+  select t.id,t.bzfl,t.bzxh,t.bzbm,t.bzmc,t.bzlx,t.zlfsbm,t.zlfsmc,
+  t.ylzfyxe,t.ybtczfxe,t.xdzysj,t.bxbl,t.starttime,t.endtime from  t_bzzdb t     
+        <where>
+            <if test=" type != null and type != '' ">
+               and  t.bzlx =#{type}
+            </if>          
+        </where>
+  </select> 
+ <select id="drgsType" resultMap="DrgsResultMap"    >
+ select distinct t.flbm,t.fl
+ from T_BZFL t 
+  </select> 
+
+  
+</mapper>

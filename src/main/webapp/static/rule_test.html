@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>测试规则</title>
+<script type="text/javascript" src="easyui/jquery.min.js"></script>
+<script type="text/javascript">
+$("document").ready(function(){
+	var ip = 'localhost';
+	//测试审核
+    $("#gzce").click(function(){
+    	$.ajax({  
+            type: "post",  
+            url: 'http://'+ip+':8080/kbms/request/examine',  
+            async: false, // 使用同步方式  
+            // 1 需要使用JSON.stringify 否则格式为 a=2&b=3&now=14...  
+            // 2 需要强制类型转换，否则格式为 {"a":"2","b":"3"}  
+            data: JSON.stringify({
+            	//"header": {
+              //      "certId": "shuxin123"
+               // },
+				//"body": { 
+					"reqData": {
+						"certId": "shuxin123",
+						"hospitalClaim":{
+							"id":"105",					//id
+							"pointOrgId":"pointOrgId",			//定点机构ID
+							"pointOrgGrade":"-2",			//定点机构等级
+							"pointOrgType":"1",			//定点机构类型
+							"diaSerialCode":"100003",			//就诊流水号
+							"medTreatmentMode":"11",		//就医方式
+							"medTreatmentCode":"medTreatmentCode",		//住院号\门诊号
+							"patCode":"90134***",				//参保人编码
+							"patMedInsuCard":"",		//医保卡号
+							"patName":"patName",				//参保人姓名
+							"patInsuredType":"392",		//参保类型
+							"patIsPregnant":"0",			//是否怀孕
+							"patIsNursing":"0",			//是否哺乳期孕妇
+							"patGender":"2",				//性别
+							"patAge":"17",				//年龄
+							"patHeight":"170",				//身高
+							"patWeight":"76.46",				//体重
+							"patIdCard":"1231231231",				//身份证号
+							"patType":"1",				//人员类别
+							"patBirthday":"2012-01-31 12:00:00",			//出生日期
+							"diaInHospCode":"C02.901",			//入院诊断编码
+							"diaInHospName":"diaInHospName",			//入院诊断名称
+							"diaOutHospCode":"",		//出院诊断编码
+							"diaOutHospName":"diaOutHospName",		//出院诊断名称
+							"diaViceCode":"222",			//副诊断编码 
+							"diaViceName":"aaa",           	//副诊断名称
+							"inHospDate":"2017-12-10  12:00:00",			//入院日期
+							"outHospDate":"2017-12-20  12:00:00",			//出院日期
+							"settlementDate":"2016-05-11 12:00:00",		//结算日期
+							"inHospDeptCode":"inHospDeptCode",		//入院科室编码
+							"inHospDeptName":"inHospDeptName",		//入院科室名称
+							"outHospDeptCode":"",		//出院科室编码
+							"outHospDeptName":"",		//出院科室名称
+							"physicianCode":"physicianCode",			//医师工号
+							"physicianName":"physicianName",			//医师姓名
+							"physicianLevel":"33",		//医师级别
+							"isRemote":"0",				//异地就医标识
+							"medInsTotalCost":"123.23",		//医保内金额
+							"totalCost":"243.23",				//总费用
+							"treatmentType":"3",			//待遇类型
+							"disSoldierSign":"1",		//一至六级残疾军人待核标志
+							"becWarPubSign":"2",			//因战因公标志
+							"healType":"2",				//保健类别
+							"inpaArea":"inpaArea",				//病区
+							"medRecordCode":"medRecordCode",			//病案号
+							"liveHospStatus":"1",		//住院状态 1 0 -1
+							"isIncrement":"1",			//是否增量
+							"insuHandId":"1",				//保险经办ID
+							"dbzzlfs":"1",					//治疗方式
+							"dbzzlmc":"普通门诊",					//治疗名称
+							"dataSource":"1",			//上传来源
+							"operationType":"1"         //主单操作类型
+						},                   
+		               	"hospitalClaimDetails":[						
+		               		{						
+		               			"id":"a0014",				//id
+								"diaSerialCode":"100003",		//就诊流水号
+								"docSerialCode":"docSerialCode",		//医嘱流水号
+								"docSerialType":"-1"	,					//医嘱类型
+								"productCode":"0003490001",		//项目编码     0003840001
+								"productName":"productName",		//项目名称
+								"thrCatType":"1",		//三大目录类别  1 2 3 4
+								"fygbmc":"aaa",//费用归并名称
+								"fygbbm":"233",//费用归并编码
+								"mgbz":"C15.901 ," ,      //门规病种
+								"reimLevel":"3",			//报销等级
+								"outHospTakMedicine":"1",//出院带药标识
+								"unitPrice":"1.45",			//单价
+								"pnumber":"7",			//数量
+								"amount":"160.65",			//金额	
+								"unit":"ke",				//包装单位
+								"spec":"",				//规格
+								"medDays":"",			//用药天数
+								"dosage":"",			//每次用量
+								"frequency":"",			//使用频次
+								"cardNum":"",			//帖数
+								"outYardSign":"0",		//外院费用标识
+								"chargSign":"0",			//计费标识
+								"serviceDate":"2017-12-18 02:00:00",		//服务日期
+								"stopDate":"2017-12-22 14:25:11",
+								"hospDeptCode":"hospDeptCode",		//执行科室编码
+								"hospDeptName":"hospDeptName",		//执行科室名称
+								"physicianCode":"",		//执行医生工号
+								"physicianName":"",		//执行医生姓名
+								"medInsCost":"2340.22",		//医保内金额
+								"payCost":"2342.33",			//先行自付金额
+								"selfCost":"23423.33",			//自费金额
+								"detailOperationType":"1"       //明细操作类型
+		                   	} 	,{						
+		               			"id":"a0015",				//id
+								"diaSerialCode":"100003",		//就诊流水号
+								"docSerialCode":"docSerialCode",		//医嘱流水号
+								"docSerialType":"-1"	,					//医嘱类型
+								"productCode":"0058160322",		//项目编码     1000010827
+								"productName":"productName",		//项目名称
+								"thrCatType":"1", 		//三大目录类别
+								"fygbmc":"bbb",//费用归并名称
+								"fygbbm":"334",//费用归并编码
+								"mgbz":"K74.602 ," ,      //门规病种
+								"reimLevel":"3",			//报销等级
+								"outHospTakMedicine":"1",//出院带药标识
+								"unitPrice":"1",			//单价
+								"pnumber":"5",			//数量
+								"amount":"77",			//金额	
+								"unit":"ke",				//包装单位
+								"spec":"",				//规格
+								"medDays":"",			//用药天数
+								"dosage":"",			//每次用量
+								"frequency":"",			//使用频次
+								"cardNum":"",			//帖数
+								"outYardSign":"0",		//外院费用标识
+								"chargSign":"0",			//计费标识
+								"serviceDate":"2017-11-13 02:00:00",		//服务日期
+								"hospDeptCode":"hospDeptCode",		//执行科室编码
+								"hospDeptName":"hospDeptName",		//执行科室名称
+								"physicianCode":"",		//执行医生工号
+								"physicianName":"",		//执行医生姓名
+								"medInsCost":"2340.22",		//医保内金额
+								"payCost":"2342.33",			//先行自付金额
+								"selfCost":"23423.33",			//自费金额
+								"detailOperationType":"1"       //明细操作类型
+		                   	}	
+		                   	
+		               	]
+					}
+            	//}
+            }),  
+            contentType: "application/json; charset=utf-8",  
+            dataType: "json",  
+            success: function(data) {  
+                $('#result').text(JSON.stringify(data));  
+            } // 注意不要在此行增加逗号  
+        });  
+    });
+    
+	//删除主单
+    $("#sczd").click(function(){
+    	$.ajax({  
+            type: "post",  
+            url: 'http://localhost:8080/kbms/request/deleteClaim',  
+            async: false, // 使用同步方式  
+            data: JSON.stringify({
+            	"body": { 
+					"reqData": {
+	            		"claimId":"01"
+					}
+            	}
+            }),
+            contentType: "application/json; charset=utf-8",  
+            dataType: "json",  
+            success: function(data) {  
+                $('#sczdresult').text(data);  
+            } 
+        });  
+    });
+	
+  //修改主单
+    $("#xgzd").click(function(){
+    	$.ajax({  
+            type: "post",  
+            url: 'http://localhost:8080/kbms/request/editClaim',  
+            async: false, // 使用同步方式  
+            data: JSON.stringify({
+            	"body": { 
+					"reqData": {
+						"hospitalClaim":{
+							"id":"02",					//id
+							"pointOrgId":"pointOrgId",			//定点机构ID
+							"pointOrgGrade":"2",			//定点机构等级
+							"pointOrgType":"1",			//定点机构类型
+							"diaSerialCode":"000001",			//就诊流水号
+							"medTreatmentMode":"11",		//就医方式
+							"medTreatmentCode":"medTreatmentCode",		//住院号\门诊号
+							"patCode":"patCode",				//参保人编码
+							"patMedInsuCard":"patMedInsuCard",		//医保卡号
+							"patName":"patName",				//参保人姓名
+							"patInsuredType":"2",		//参保类型
+							"patIsPregnant":"1",			//是否怀孕
+							"patIsNursing":"1",			//是否哺乳期孕妇
+							"patGender":"1",				//性别
+							"patAge":"11",				//年龄
+							"patHeight":"12",				//身高
+							"patWeight":"13",				//体重
+							"patIdCard":"123123123",				//身份证号
+							"patType":"2",				//人员类别
+							"patBirthday":"2016-05-08",			//出生日期
+							"diaInHospCode":"diaInHospCode",			//入院诊断编码
+							"diaInHospName":"diaInHospName",			//入院诊断名称
+							"diaOutHospCode":"diaOutHospCode",		//出院诊断编码
+							"diaOutHospName":"diaOutHospName",		//出院诊断名称
+							"diaViceCode":"diaViceCode",			//副诊断编码 
+							"inHospDate":"2016-05-09",			//入院日期
+							"outHospDate":"2016-05-10",			//出院日期
+							"settlementDate":"2016-05-11",		//结算日期
+							"inHospDeptCode":"inHospDeptCode",		//入院科室编码
+							"inHospDeptName":"inHospDeptName",		//入院科室名称
+							"outHospDeptCode":"outHospDeptCode",		//出院科室编码
+							"outHospDeptName":"outHospDeptName",		//出院科室名称
+							"physicianCode":"physicianCode",			//医师工号
+							"physicianName":"physicianName",			//医师姓名
+							"physicianLevel":"33",		//医师级别
+							"isRemote":"0",				//异地就医标识
+							"medInsTotalCost":"123.234",		//医保内金额
+							"totalCost":"243.23",				//总费用
+							"treatmentType":"3",			//待遇类型
+							"disSoldierSign":"1",		//一至六级残疾军人待核标志
+							"becWarPubSign":"2",			//因战因公标志
+							"healType":"2",				//保健类别
+							"inpaArea":"inpaArea",				//病区
+							"medRecordCode":"medRecordCode",			//病案号
+							"liveHospStatus":"",		//住院状态
+							"isIncrement":"1",			//是否增量
+							"insuHandId":"1"				//保险经办ID
+						}     
+					}
+            	}
+            }),  
+            contentType: "application/json; charset=utf-8",  
+            dataType: "json",  
+            success: function(data) {  
+                $('#xgzdresult').text(data);  
+            } // 注意不要在此行增加逗号  
+        });  
+    });
+  
+  //删除明细
+    $("#scmx").click(function(){
+    	$.ajax({  
+            type: "post",  
+            url: 'http://localhost:8080/kbms/request/deleteDetail',  
+            async: false, // 使用同步方式  
+            data: JSON.stringify({
+            	"body": { 
+					"reqData": {
+            			"detailId":"02"
+					}
+            	}
+            }),
+            contentType: "application/json; charset=utf-8",  
+            dataType: "json",  
+            success: function(data) {  
+                $('#scmxresult').text(data);  
+            } 
+        });  
+    });
+  
+  //修改明细
+    $("#xgmx").click(function(){
+    	$.ajax({  
+            type: "post",  
+            url: 'http://localhost:8080/kbms/request/editClaim',  
+            async: false, // 使用同步方式  
+            data: JSON.stringify({
+            	"body": { 
+					"reqData": {
+						"hospitalClaimDetail":{
+							"id":"002",				//id
+							"diaSerialCode":"000001",		//就诊流水号
+							"docSerialCode":"docSerialCode",		//医嘱流水号
+							"docSerialType":"0",						//医嘱类型
+							"productCode":"productCode",		//项目编码
+							"productName":"productName",		//项目名称
+							"thrCatType":"2",		//三大目录类别
+							"reimLevel":"3",			//报销等级
+							"outHospTakMedicine":"0",//出院带药标识
+							"unitPrice":"123.23",			//单价
+							"pnumber":"12",			//数量
+							"amount":"322",			//金额	
+							"unit":"ke",				//包装单位
+							"spec":"ss",				//规格
+							"medDays":"22",			//用药天数
+							"dosage":"33",			//每次用量
+							"frequency":"34",			//使用频次
+							"cardNum":"23",			//帖数
+							"outYardSign":"0",		//外院费用标识
+							"chargSign":"0",			//计费标识
+							"serviceDate":"2016-5-9",		//服务日期
+							"hospDeptCode":"hospDeptCode",		//执行科室编码
+							"hospDeptName":"hospDeptName",		//执行科室名称
+							"physicianCode":"physicianCode",		//执行医生工号
+							"physicianName":"physicianName",		//执行医生姓名
+							"medInsCost":"234.22",		//医保内金额
+							"payCost":"2342.33",			//先行自付金额
+							"selfCost":"23423.33"			//自费金额
+						}      
+					}
+            	}
+            }),  
+            contentType: "application/json; charset=utf-8",  
+            dataType: "json",  
+            success: function(data) {  
+                $('#xgmxresult').text(JSON.stringify(data));  
+            } // 注意不要在此行增加逗号  
+        });  
+    });
+  	
+  	
+  	
+    $("#cskk").click(function(){
+    	$.get('http://'+ip+':8080/kbms/request/zyw',function (data){
+    		$("#cskkresult").text(data);
+    	});
+    	
+    	
+    });
+  
+ });
+</script>
+</head>
+<body>
+	<a href="javascript:void(0);" id="gzce">测试规则</a>
+	<div id="result">提示信息</div>
+	<br/>
+	<a href="javascript:void(0);" id="sczd">删除主单信息</a>
+	<div id="sczdresult"></div>
+	<br/>
+	<a href="javascript:void(0);" id="xgzd">修改主单信息</a>
+	<div id="xgzdresult"></div>
+	<br/>
+	<a href="javascript:void(0);" id="scmx">删除明细信息</a>
+	<div id="scmxresult"></div>
+	<br/>
+	<a href="javascript:void(0);" id="xgmx">修改明细信息</a>
+	<div id="xgmxresult"></div>
+	<br/>
+	<a href="javascript:void(0);" id="cskk">测试</a>
+	<div id="cskkresult"></div>
+</body>
+</html>

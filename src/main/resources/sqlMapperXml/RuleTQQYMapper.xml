@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.shuxin.mapper.ruleengine.RuleTQQYMapper">
+
+	<select id="selectAdvanceMedicineIllegal" resultType="java.util.HashMap">
+		select to_char(t.YPBM) YPBM,to_number(t.zxbz) zxbz,to_number(t.rzdjl) rzdjl,
+		to_number(t.tqts) tqts,t.bzxdtqts from T_TQQYWG t
+		where to_char(YPBM) in
+		<foreach item="hospitalClaim" index="index" collection="list" open="(" separator="," close=")">  
+            #{hospitalClaim.productCode}
+     	</foreach>     	
+	</select>
+	
+	<select id="selectAdvanceMedicineSuspicious" resultType="java.util.HashMap">
+		select to_char(t.YPBM) YPBM,to_number(t.zxbz) zxbz,to_number(t.rzdjl) rzdjl,
+		to_number(t.tqts) tqts,t.bzxdtqts from t_tqqyky t
+		where to_char(YPBM) in
+		<foreach item="hospitalClaim" index="index" collection="list" open="(" separator="," close=")">  
+            #{hospitalClaim.productCode}
+     	</foreach>
+	</select>
+
+</mapper>

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.shuxin.mapper.ruleengine.RuleSYBDCCFFYCXMapper">
+
+<select id="selectProvincialMedicalInsuranceInfo" resultType="java.util.Map" >
+	select t.jyfs,t.ypzfy from t_sybdccffycx t where rownum=1
+</select>
+
+<select id="selectByDrugcode" resultType="java.lang.String">
+		<!--  select t.drug_name from t_drugs_catalog t where  t.drug_code =#{productCode} 
+		and t.drug_type='3' -->
+		
+		select t.drug_code from t_drugs_catalog t where  t.drug_type='3' 
+	
+</select>
+
+</mapper>

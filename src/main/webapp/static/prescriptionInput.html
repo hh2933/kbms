@@ -1,0 +1,839 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>处方录入</title>
+    <link href="css/bootstrap.min.css" rel="stylesheet"/>
+    <link href="css/style.css" rel="stylesheet"/>
+    <link href="css/font-awesome.css" rel="stylesheet" />
+    <style></style>
+</head>
+<body>
+   <nav class="navbar navbar-default navbar-cls-top " role="navigation" style="margin-bottom: 0">
+       <div class="navbar-header" style="line-height: 70px;margin-left: 6%">
+           <img class="header-title-img1" src="img/logo.png" alt="数盺医疗"/>
+       </div>
+       <div class="header-right">
+           <!--<a href="#" title="New Message" class="fs-14"><i class="fa msg"></i> 信息</a>
+           <a href="#" title="Help" class="fs-14"><i class="fa help"></i> 帮助</a>
+           <a href="#" title="admin" class="fs-14"><i class="fa admin"></i> 李军</a>
+           <button type="button" id="out" class="btn btn-primary out-btn">退出</button>-->
+       </div>
+   </nav>
+    <div class="container" style="margin-top: 110px;margin-bottom: 40px">
+       <div>
+           <table>
+               <tr>
+                   <td style="font-size: 16px">                      
+                       
+					   上传文件 ： <input type="file" name = "file" id = "fileId" /> 
+					   	<button  type = "submit" name = "btn" value = "导入数据" id = "btnId" onclick="check()" />导入数据 
+                   </td>
+               </tr>
+           </table>
+       </div>
+        <div id="jz-msg" style="margin-top: 10px">
+            <fieldset >
+                <legend>就诊信息</legend>
+                <div class="table-responsive fd-table" style="border: none">
+                    <table class="table jk-msg-table" style="margin-bottom: 0">
+                        <tr>
+                            <td>主单ID:</td>
+                            <td><input type="text"/></td>
+                            <td>参保人编码:</td>
+                            <td><input type="text"/></td>
+                        </tr>
+                        <tr>
+                            <td>参保人姓名:</td>
+                            <td><input type="text"/></td>
+                            <td>性 别:</td>
+                            <td><select>
+                            <option value="1">男</option>
+                            <option value="2">女</option>
+                            <option value="9">未说明性别</option>
+                            </select></td>
+                            <td>出生日期:</td>
+                            <td><input type="text"/></td>
+                            <td>就医方式:</td>
+                            <td><select>
+                              <option value="11">门诊</option>
+                              <option value="13">门诊大病</option>
+                              <option value="15">异地门诊</option>
+                              <option value="21">普通住院</option>
+                              <option value="22">特殊病种住院</option>
+                              <option value="25">异地住院</option>
+                              <option value="51">生育门诊</option>
+                              <option value="52">生育住院</option>
+                              <option value="71">工伤门诊</option>
+                              <option value="72">工伤住院</option>
+                            </select></td>
+                        </tr>
+                        <tr>
+                            <td colspan="8" class="right"><img src="img/show.png" class="td-show"><img src="img/hide.png" class="td-hide"></td>
+                        </tr>
+
+                        <tr class="hide-tr">
+                            <td>医院ID:</td>
+                            <td><input type="text"/></td>
+                            <td>医院等级:</td>
+                            <td><input type="text"/></td>
+                            <td>医院类型:</td>
+                            <td><input type="text"/></td>
+                            <td><input type="checkbox" class="yn-zl" value="1" id="increment" style="width: 18px"/>是否增量</td>
+                        </tr>
+                        <tr class="hide-tr">
+                            <td>科室名称:</td>
+                            <td><input type="text"/></td>
+                            <td>医师级别:</td>
+                            <td><input type="text"/></td>
+                            <td>结算日期:</td>
+                            <td><input type="text"/></td>
+                        </tr>
+                        <tr class="hide-tr">
+                            <td>入院时间:</td>
+                            <td><input type="text"/></td>
+                            <td>出院时间:</td>
+                            <td><input type="text"/></td>
+                            <td>是否孕期:</td>
+                            <td><select>
+                               <option value="1">是</option>
+                               <option value="0">否</option>
+                            </select></td>
+                            <td>是否哺乳期:</td>
+                            <td><select>
+                               <option value="1">是</option>
+                               <option value="0">否</option>
+                            </select></td>
+                        </tr>
+                        <tr class="hide-tr">
+                            <td>人员类别:</td>
+                            <td><select>
+                             <option value="1">在职</option>
+                             <option value="2">退休</option>
+                             <option value="3">离休</option>
+                             <option value="4">老年人</option>
+                             <option value="5">儿童</option>
+                            </select></td>
+                            <td>参保类型:</td>
+                            <td><select>
+                            	<option value="391">城镇职工基本医疗保险</option>
+                            	<option value="390">城乡居民基本医疗保险</option>
+                            	<option value="410">工伤</option>
+                            	<option value="510">生育</option>
+                            	<option value="392">省医保</option>
+                            </select></td>
+                            <td>医保内金额:</td>
+                            <td><input type="text"/></td>
+                            <td>总费用:</td>
+                            <td><input type="text"/></td>
+                        </tr>
+                        <tr class="hide-tr">
+                            <td>入院诊断:</td>
+                            <td><input type="text"/></td>
+                            <td>出院诊断:</td>
+                            <td><input type="text"/></td>
+                            <td>其他副诊断:</td>
+                            <td><input type="text"/></td>
+                        </tr>
+                        <tr class="hide-tr">
+                            <td>待遇类型:</td>
+                            <td><input type="text"/></td>
+                            <td>异地就医:</td>
+                            <td><select>
+                            <option value="0">否</option>
+                            <option value="1">是</option>
+                            </select></td>
+                            <td>是否残疾军人:</td>
+                            <td><select>
+                            <option value="0">否</option>
+                            <option value="1">是</option>
+                            </select></td>
+                        </tr>
+                        <tr class="hide-tr">
+                            <td>因战因公:</td>
+                            <td><select>
+                            <option value="0">否</option>
+                            <option value="1">是</option>
+                            </select></td>
+                            <td>保健类型:</td>
+                            <td><input type="text"/></td>
+                        </tr>
+                        <tr class="hide-tr">
+                            <td>病区编码:</td>
+                            <td><input type="text"/></td>
+                            <td>病案号:</td>
+                            <td><input type="text"/></td>
+                            <td>门诊/住院号:</td>
+                            <td><input type="text"/></td>
+                            <td>住院状态:</td>
+                            <td><select>
+                            <option value=""></option>
+                            <option value="0">未出院</option>
+                            <option value="1">已出院</option>
+                            </select></td>
+                        </tr>
+                        <tr class="hide-tr">
+                            <td>就诊流水号:</td>
+                            <td><input type="text"/></td>
+                            <td>年龄:</td>
+                            <td><input type="text"/></td>
+                            <td>身高:</td>
+                            <td><input type="text"/></td>
+                            <td>体重:</td>
+                            <td><input type="text"/></td>
+                        </tr>
+                        <tr class="hide-tr">
+                            <td>身份证号:</td>
+                            <td><input type="text"/></td>
+                            <td>入院诊断名称:</td>
+                            <td><input type="text"/></td>
+                            <td>出院诊断名称:</td>
+                            <td><input type="text"/></td>
+                            <td>入院科室编码:</td>
+                            <td><input type="text"/></td>
+                        </tr>
+                        <tr class="hide-tr">
+                            <td>入院科室名称:</td>
+                            <td><input type="text"/></td>
+                            <td>出院科室编码:</td>
+                            <td><input type="text"/></td>
+                            <td>出院科室名称:</td>
+                            <td><input type="text"/></td>
+                            <td>医师工号:</td>
+                            <td><input type="text"/></td>
+                        </tr>
+                        <tr class="hide-tr">
+                            <td>医师姓名:</td>
+                            <td><input type="text"/></td>
+                            <td>保险经办ID:</td>
+                            <td><input type="text"/></td>
+                            <td>上传来源:</td>
+                            <td><select>
+                               <option value="1">医生工作站</option>
+                               <option value="2">护士工作站</option>
+                               <option value="3">结算</option>
+                            </select></td>
+                            <td>主单操作类型:</td>
+                            <td><select>
+                               <option value="1">增加</option>
+                               <option value="2">修改</option>
+                               <option value="3">删除</option>
+                            </select></td>
+                        </tr>
+                    </table>
+                </div>
+
+            </fieldset>
+        </div>
+        <div class="hr">
+
+        </div>
+        <div>
+            <fieldset >
+                <legend>处方信息</legend>
+                <div class="table-responsive fd-table" style="margin-bottom: 10px">
+                    <table class="table table-striped cf-msg-table">
+                        <tr>
+                            <th>序号</th>
+                            <th>项目ID</th>
+                            <th>就诊流水号</th>
+                            <th>医嘱流水号</th>
+                            <th>医嘱类型</th>
+                            <th>项目编码</th>
+                            <th>项目名称</th>
+                            <th>三大目录类别</th>
+                            <th>报销等级</th>
+                            <th>数量</th>
+                            <th>单价</th>
+                            <th>金额</th>
+                            <th>医保内金额</th>
+                            <th>先行自付金额</th>
+                            <th>自费金额</th>
+                            <th>用药天数</th>
+                            <th>每次用量</th>
+                            <th>使用频次</th>
+                            <th>包装单位</th>
+                            <th>规格</th>
+                            <th>帖数</th>
+                            <th>出院带药标志</th>
+                            <th>外院费用标志</th>
+                            <th>计费标志</th>
+                            <th>服务日期</th>
+                            <th>执行科室编码</th>
+                            <th>执行科室名称</th>
+                            <th>执行医生工号</th>
+                            <th>执行医生姓名</th>
+                            <th>明细操作类型</th>
+                        </tr>
+
+                    </table>
+
+                </div>
+                <div class="table-responsive btn-table">
+                    <table class="table" style="margin-bottom: 0">
+                        <tr style="text-align: center">
+                            <td>
+                                <button type="button" id="check" class="btn btn-warning" style="margin-right: 20px">&nbsp;确 认&nbsp;</button>
+                                <button type="button" id="reset" class="btn btn-success">&nbsp;重 置&nbsp;</button>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </fieldset>
+        </div>
+    </div>
+    <div class="BgDiv3"></div>
+    <div class="DialogDiv3" style="display: none">
+        <div class="layer">
+            <span>审核提醒</span>
+        </div>
+
+        <!--table数据-->
+        <div class="layer-div">
+            <fieldset >
+                <legend>审核结果信息</legend>
+                <div class="table-responsive fd-table">
+                    <table class="table table-striped sh-jg-table">
+                        <tr>
+                            <th>序号</th>
+                            <th>规则名称</th>
+                            <!-- <th>项目ID</th> -->
+                            <th>项目时间</th>
+                            <th>项目编码</th>
+                            <th>项目名称</th>
+                            <th>违规原因</th>
+                        </tr>
+                    </table>
+
+                </div>
+            </fieldset>
+
+            <fieldset id="kf_cause" >
+                <legend>选择开立原因</legend>
+                <div class="table-responsive fd-table" style="margin-bottom: 10px;">
+                    <table class="table table-striped kf_cause_table">
+                        <tr>
+                            <th>选择</th>
+                            <th style="text-align: left">原因内容</th>
+                        </tr>
+                        <tr>
+                            <td><input type="checkbox" name="chk" class="check1" checked/></td>
+                            <td style="text-align: left">01、急重症</td>
+                        </tr>
+                        <tr>
+                            <td><input type="checkbox" name="chk" class="check2"/></td>
+                            <td style="text-align: left">02、临床需要:<input type="text"  placeholder="请输入原因" class="text-area"></td>
+                        </tr>
+                    </table>
+                </div>
+                <div class="fd-table" style="margin-bottom: 10px;margin-top: 20px">
+                    <div style="text-align: center;margin-top: 10px">
+                        <button type="button" id="confirm" class="btn btn-warning">&nbsp;开立医嘱&nbsp;</button>
+                        <button type="button" id="back" class="btn" style="border: 1px solid #E39B00;color:#E39B00;background: #ffffff;margin-left: 20px">&nbsp;返回修改&nbsp;</button>
+                    </div>
+                </div>
+            </fieldset>
+        </div>
+    </div>
+<script src="js/jquery-3.2.1.min.js"></script>
+<script src="js/bootstrap.min.js"></script>
+
+<script>
+var hospitalClaimDetails=[];
+function check() {
+        
+        var objFile = document.getElementById("fileId");
+        if(objFile.value == "") {
+            alert("不能空")
+        }
+    
+        console.log(objFile.files[0].size); // 文件字节数
+        
+        var files = $('#fileId').prop('files');//获取到文件列表
+        if(files.length == 0){
+            alert('请选择文件');
+        }else{
+            var reader = new FileReader();//新建一个FileReader
+            reader.readAsText(files[0], "UTF-8");//读取文件 
+            reader.onload = function(evt){ //读取完文件之后会回来这里
+                var fileString = evt.target.result; // 读取文件内容
+               // alert(fileString);
+                var jsonObj = $.parseJSON(fileString);
+                setData(jsonObj);
+        }
+    }
+	}
+	
+	function setData(data)
+	{
+		 var $jsontip = $(".cf-msg-table");
+         
+		 hospitalClaimDetails = [];
+		 
+         var $json_msg = $(".jk-msg-table td input,select");
+         var strHtml = "<tr>";//存储数据的变量
+         var checkHtml = "<tr>";//存储数据的变量
+         var limit=$(".cf-msg-table tr").length;
+         var unit = $(".sh-jg-table tr").length;
+         var count =0;
+         var count1 =0;
+         if(limit>1){
+             /*处方信息*/
+             for(limit--;limit>0;){
+                 count++;
+                 $(".cf-msg-table tr")[1].remove()
+                 if(count==limit){
+                     break;
+                 }
+             }
+         }
+         if(unit>1){
+             for(unit--;unit>0;){
+                 count1++;
+                $(".sh-jg-table tr")[1].remove();
+                 if(count1==unit){
+                     break;
+                 }
+
+             }
+         }
+         
+         /*就诊信息*/
+         $(data.jz_message).each(function(){
+             $json_msg[0].value = data.jz_message.ID;
+             $json_msg[1].value = data.jz_message.cb_Code;
+             $json_msg[2].value = data.jz_message.name;
+             $json_msg[3].value = data.jz_message.sex;
+             $json_msg[4].value = data.jz_message.birthday;
+             $json_msg[5].value = data.jz_message.jy_Mode;
+             $json_msg[6].value = data.jz_message.hospital_Id;
+             $json_msg[7].value = data.jz_message.hospital_Grade;
+             $json_msg[8].value = data.jz_message.hospital_Type;
+             $json_msg[10].value = data.jz_message.ks_Name;
+             $json_msg[11].value = data.jz_message.ys_Grade;
+             $json_msg[12].value = data.jz_message.js_Date;
+             $json_msg[13].value = data.jz_message.ry_Date;
+             $json_msg[14].value = data.jz_message.cy_Date;
+             $json_msg[15].value = data.jz_message.pregnancy;
+             $json_msg[16].value = data.jz_message.breastfeeding;
+             $json_msg[17].value = data.jz_message.people_Type;
+             $json_msg[18].value = data.jz_message.cb_Type;
+             $json_msg[19].value = data.jz_message.ybn_Money;
+             $json_msg[20].value = data.jz_message.sum_Money;
+             $json_msg[21].value = data.jz_message.ry_Diagnosis;
+             $json_msg[22].value = data.jz_message.cy_Diagnosis;
+             $json_msg[23].value = data.jz_message.other_Diagnosis;
+             $json_msg[24].value = data.jz_message.dy_Type;
+             $json_msg[25].value = data.jz_message.yd_Doctor;
+             $json_msg[26].value = data.jz_message.cj_Soldier;
+             $json_msg[27].value = data.jz_message.cause_War_Duty;
+             $json_msg[28].value = data.jz_message.care_Type;
+             $json_msg[29].value = data.jz_message.ward_Num;
+             $json_msg[30].value = data.jz_message.case_Num;
+             $json_msg[31].value = data.jz_message.mz_zy_Num;
+             $json_msg[32].value = data.jz_message.zy_State;
+             $json_msg[33].value = data.jz_message.diaSerialCode;
+             $json_msg[34].value = data.jz_message.patAge;
+             $json_msg[35].value = data.jz_message.patHeight;
+             $json_msg[36].value = data.jz_message.patWeight;
+             $json_msg[37].value = data.jz_message.patIdCard;
+             $json_msg[38].value = data.jz_message.diaInHospName;
+             $json_msg[39].value = data.jz_message.diaOutHospName;
+             $json_msg[40].value = data.jz_message.inHospDeptCode;
+             $json_msg[41].value = data.jz_message.inHospDeptName;
+             $json_msg[42].value = data.jz_message.outHospDeptCode;
+             $json_msg[43].value = data.jz_message.outHospDeptName;
+             $json_msg[44].value = data.jz_message.physicianCode;
+             $json_msg[45].value = data.jz_message.physicianName;
+             $json_msg[46].value = data.jz_message.insuHandId;
+             $json_msg[47].value = data.jz_message.dataSource;
+             $json_msg[48].value = data.jz_message.operationType;
+
+         });
+
+         /*处方信息*/
+         $.each(data.cf_message,function(infoIndex,info){        	 
+             strHtml += "<td>"+info["ID"]+"</td>";
+             strHtml += "<td>"+info["diaSerialCode"]+"</td>";
+             strHtml += "<td>"+info["docSerialCode"]+"</td>";
+             strHtml += "<td>"+info["docSerialType"]+"</td>";
+             strHtml += "<td>"+info["project_Id"]+"</td>";
+             strHtml += "<td>"+info["project_Num"]+"</td>";
+             strHtml += "<td>"+info["project_Name"]+"</td>";
+             strHtml += "<td>"+info["thrCatType"]+"</td>";
+             strHtml += "<td>"+info["reimLevel"]+"</td>";
+             strHtml += "<td class='right'>"+info["quantity"]+"</td>";
+             strHtml += "<td class='right'>"+info["price"]+"</td>";
+             strHtml += "<td class='right'>"+info["sum_Money"]+"</td>";
+             strHtml += "<td class='right'>"+info["ybn_Money"]+"</td>";
+             strHtml += "<td class='right'>"+info["payCost"]+"</td>";
+             strHtml += "<td class='right'>"+info["selfCost"]+"</td>";
+             strHtml += "<td class='right'>"+info["medication_Days"]+"</td>";
+             strHtml += "<td>"+info["each_Medication"]+"</td>";
+             strHtml += "<td>"+info["use_Frequency"]+"</td>";
+             strHtml += "<td>"+info["bz_Unit"]+"</td>";
+             strHtml += "<td>"+info["standard"]+"</td>";
+             strHtml += "<td>"+info["link_Rich"]+"</td>";
+             strHtml += "<td>"+info["cy_dy_Mark"]+"</td>";
+             strHtml += "<td>"+info["wy_fy_Mark"]+"</td>";
+             strHtml += "<td>"+info["billing_Mark"]+"</td>";
+             strHtml += "<td>"+info["serviceDate"]+"</td>";
+             strHtml += "<td>"+info["hospDeptCode"]+"</td>";
+             strHtml += "<td>"+info["hospDeptName"]+"</td>";
+             strHtml += "<td>"+info["physicianCode"]+"</td>";
+             strHtml += "<td>"+info["physicianName"]+"</td>";            
+             strHtml += "<td>"+info["detailOperationType"]+"</td>";
+             strHtml += "</tr>"
+             
+            	 var hospitalClaimDetail = new Object();
+             hospitalClaimDetail.id=info["project_Id"];
+             hospitalClaimDetail.diaSerialCode=info["diaSerialCode"];
+             hospitalClaimDetail.docSerialCode=info["docSerialCode"];
+             hospitalClaimDetail.docSerialType=info["docSerialType"];
+             hospitalClaimDetail.productCode=info["project_Num"];
+             hospitalClaimDetail.productName=info["project_Name"];
+             hospitalClaimDetail.thrCatType=info["thrCatType"];
+             hospitalClaimDetail.reimLevel=info["reimLevel"];
+             hospitalClaimDetail.outHospTakMedicine=info["cy_dy_Mark"];             
+             hospitalClaimDetail.unitPrice=info["price"];
+             hospitalClaimDetail.pnumber=info["quantity"];
+             hospitalClaimDetail.amount=info["sum_Money"];
+             hospitalClaimDetail.unit=info["bz_Unit"];
+             hospitalClaimDetail.spec=info["standard"];
+             hospitalClaimDetail.medDays=info["medication_Days"];
+             hospitalClaimDetail.dosage=info["each_Medication"];
+             hospitalClaimDetail.frequency=info["use_Frequency"];
+             hospitalClaimDetail.cardNum=info["link_Rich"];
+             hospitalClaimDetail.outYardSign=info["wy_fy_Mark"];
+             hospitalClaimDetail.chargSign=info["billing_Mark"];
+             hospitalClaimDetail.serviceDate=info["serviceDate"];
+             hospitalClaimDetail.hospDeptCode=info["hospDeptCode"];
+             hospitalClaimDetail.hospDeptName=info["hospDeptName"];
+             hospitalClaimDetail.physicianCode=info["physicianCode"];
+             hospitalClaimDetail.physicianName=info["physicianName"];
+             hospitalClaimDetail.medInsCost=info["ybn_Money"];
+             hospitalClaimDetail.payCost=info["payCost"];
+             hospitalClaimDetail.selfCost=info["selfCost"];
+             hospitalClaimDetail.detailOperationType=info["detailOperationType"];
+             hospitalClaimDetails.push(hospitalClaimDetail);
+         });
+         $jsontip.append(strHtml);//显示处理后的数据
+	}
+
+    /*初始化*/
+    $(document).ready(function(){
+        $(".hide-tr").hide();
+        $(".td-hide").hide();
+    });
+    $(function() {
+        /*点击显示就诊信息*/
+        $(".td-show").click(function(){
+            $(".hide-tr").toggle();
+            $(".td-show").hide();
+            $(".td-hide").show();
+        });
+        $(".td-hide").click(function(){
+            $(".hide-tr").toggle();
+            $(".td-hide").hide();
+            $(".td-show").show();
+        });
+
+
+        /*导入数据按钮*/
+        $("#import").click(function(){
+            var json = $('#switch-select option:selected').text();
+            var json_name = "js/"+json+".json";
+            $.getJSON(json_name,function(data){
+                var $jsontip = $(".cf-msg-table");
+                var $json_check = $(".sh-jg-table");
+
+                var $json_msg = $(".jk-msg-table td input");
+                var strHtml = "<tr>";//存储数据的变量
+                var checkHtml = "<tr>";//存储数据的变量
+                var limit=$(".cf-msg-table tr").length;
+                var unit = $(".sh-jg-table tr").length;
+                var count =0;
+                var count1 =0;
+                if(limit>1){
+                    /*处方信息*/
+                    for(limit--;limit>0;){
+                        count++;
+                        $(".cf-msg-table tr")[1].remove()
+                        if(count==limit){
+                            break;
+                        }
+                    }
+                }
+                if(unit>1){
+                    for(unit--;unit>0;){
+                        count1++;
+                       $(".sh-jg-table tr")[1].remove();
+                        if(count1==unit){
+                            break;
+                        }
+
+                    }
+                }
+
+                /*就诊信息*/
+                $(data.jz_message).each(function(){
+                    $json_msg[0].value = data.jz_message.ID;
+                    $json_msg[1].value = data.jz_message.cb_Code;
+                    $json_msg[2].value = data.jz_message.name;
+                    $json_msg[3].value = data.jz_message.sex;
+                    $json_msg[4].value = data.jz_message.birthday;
+                    $json_msg[5].value = data.jz_message.jy_Mode;
+                    $json_msg[6].value = data.jz_message.hospital_Id;
+                    $json_msg[7].value = data.jz_message.hospital_Grade;
+                    $json_msg[8].value = data.jz_message.hospital_Type;
+                    $json_msg[9].value = data.jz_message.ks_Name;
+                    $json_msg[11].value = data.jz_message.ys_Grade;
+                    $json_msg[12].value = data.jz_message.js_Date;
+                    $json_msg[13].value = data.jz_message.ry_Date;
+                    $json_msg[14].value = data.jz_message.cy_Date;
+                    $json_msg[15].value = data.jz_message.pregnancy;
+                    $json_msg[16].value = data.jz_message.breastfeeding;
+                    $json_msg[17].value = data.jz_message.people_Type;
+                    $json_msg[18].value = data.jz_message.cb_Type;
+                    $json_msg[19].value = data.jz_message.ybn_Money;
+                    $json_msg[20].value = data.jz_message.sum_Money;
+                    $json_msg[21].value = data.jz_message.ry_Diagnosis;
+                    $json_msg[22].value = data.jz_message.cy_Diagnosis;
+                    $json_msg[23].value = data.jz_message.other_Diagnosis;
+                    $json_msg[24].value = data.jz_message.dy_Type;
+                    $json_msg[25].value = data.jz_message.yd_Doctor;
+                    $json_msg[26].value = data.jz_message.cj_Soldier;
+                    $json_msg[27].value = data.jz_message.cause_War_Duty;
+                    $json_msg[28].value = data.jz_message.care_Type;
+                    $json_msg[29].value = data.jz_message.ward_Num;
+                    $json_msg[30].value = data.jz_message.case_Num;
+                    $json_msg[31].value = data.jz_message.mz_zy_Num;
+                    $json_msg[32].value = data.jz_message.zy_State;
+
+                });
+
+                /*处方信息*/
+                $.each(data.cf_message,function(infoIndex,info){
+                    strHtml += "<td>"+info["ID"]+"</td>";
+                    strHtml += "<td>"+info["project_Id"]+"</td>";
+                    strHtml += "<td>"+info["project_Num"]+"</td>";
+                    strHtml += "<td>"+info["project_Name"]+"</td>";
+                    strHtml += "<td class='right'>"+info["quantity"]+"</td>";
+                    strHtml += "<td class='right'>"+info["price"]+"</td>";
+                    strHtml += "<td class='right'>"+info["sum_Money"]+"</td>";
+                    strHtml += "<td class='right'>"+info["ybn_Money"]+"</td>";
+                    strHtml += "<td class='right'>"+info["medication_Days"]+"</td>";
+                    strHtml += "<td>"+info["each_Medication"]+"</td>";
+                    strHtml += "<td>"+info["use_Frequency"]+"</td>";
+                    strHtml += "<td>"+info["bz_Unit"]+"</td>";
+                    strHtml += "<td>"+info["standard"]+"</td>";
+                    strHtml += "<td>"+info["link_Rich"]+"</td>";
+                    strHtml += "<td>"+info["cy_dy_Mark"]+"</td>";
+                    strHtml += "<td>"+info["wy_fy_Mark"]+"</td>";
+                    strHtml += "<td>"+info["billing_Mark"]+"</td>";
+                    strHtml += "</tr>"
+                });
+
+                /*审核结果*/
+                $.each(data.check_msg,function(infoIndex,info){
+                    checkHtml += "<td>"+info["ID"]+"</td>";
+                    checkHtml += "<td>"+info["rule_Name"]+"</td>";
+                    checkHtml += "<td>"+info["project_Id"]+"</td>";
+                    checkHtml += "<td>"+info["project_Date"]+"</td>";
+                    checkHtml += "<td>"+info["project_Num"]+"</td>";
+                    checkHtml += "<td>"+info["project_Name"]+"</td>";
+                    checkHtml += "<td>"+info["wg_cause"]+"</td>";
+                    checkHtml += "</tr>"
+                });
+                $jsontip.append(strHtml);//显示处理后的数据
+                $json_check.append(checkHtml);//显示处理后的数据
+            })
+        });
+
+        /*审核按钮*/
+        $("#check").click(function () {
+        	approvalRule();
+            // var str = "我是弹出对话框";
+           
+        });
+        
+        function approvalRule()
+        {
+        	var $json_msg = $(".jk-msg-table td input,select");
+        	var increment="0";
+        	if($("#increment").val()!="")
+       		{
+        		increment=$("#increment").val();
+       		}
+        	
+            var unit = $(".sh-jg-table tr").length;
+            var count =0;
+            var count1 =0;
+            
+            if(unit>1){
+                for(unit--;unit>0;){
+                    count1++;
+                   $(".sh-jg-table tr")[1].remove();
+                    if(count1==unit){
+                        break;
+                    }
+
+                }
+            }
+        	
+        	$.ajax({  
+                type: "post",  
+                url: 'http://localhost:8080/kbms/request/examine',  
+                async: false, // 使用同步方式  
+                // 1 需要使用JSON.stringify 否则格式为 a=2&b=3&now=14...  
+                // 2 需要强制类型转换，否则格式为 {"a":"2","b":"3"}  
+                data: JSON.stringify({
+                	//"header": {
+                   //     "certId": "shuxin123"
+                   // },
+    				//"body": { 
+    					"reqData": {
+    						"certId": "shuxin123",
+    						"hospitalClaim":{
+    							"id":$json_msg[0].value,					//id
+    							"pointOrgId":$json_msg[6].value,			//定点机构ID
+    							"pointOrgGrade":$json_msg[7].value,			//定点机构等级
+    							"pointOrgType":$json_msg[8].value,			//定点机构类型
+    							"diaSerialCode":$json_msg[33].value,			//就诊流水号
+    							"medTreatmentMode":$json_msg[5].value,		//就医方式
+    							"medTreatmentCode":$json_msg[31].value,		//住院号\门诊号
+    							"patCode":$json_msg[1].value,				//参保人编码
+    							"patMedInsuCard":"patMedInsuCard",		//医保卡号
+    							"patName":$json_msg[2].value,				//参保人姓名
+    							"patInsuredType":$json_msg[18].value,		//参保类型
+    							"patIsPregnant":$json_msg[15].value,			//是否怀孕
+    							"patIsNursing":$json_msg[16].value,			//是否哺乳期孕妇
+    							"patGender":$json_msg[3].value,				//性别
+    							"patAge":$json_msg[34].value,				//年龄
+    							"patHeight":$json_msg[35].value,				//身高
+    							"patWeight":$json_msg[36].value,				//体重
+    							"patIdCard":$json_msg[37].value,				//身份证号
+    							"patType":$json_msg[17].value,				//人员类别
+    							"patBirthday":$json_msg[4].value,			//出生日期
+    							"diaInHospCode":$json_msg[21].value,			//入院诊断编码
+    							"diaInHospName":$json_msg[38].value,			//入院诊断名称
+    							"diaOutHospCode":$json_msg[22].value,		//出院诊断名称
+    							"diaOutHospName":$json_msg[39].value,		//出院诊断名称
+    							"diaViceCode":$json_msg[23].value,			//副诊断编码 
+    							"inHospDate":$json_msg[13].value,			//入院日期
+    							"outHospDate":$json_msg[14].value,			//出院日期
+    							"settlementDate":$json_msg[12].value,		//结算日期
+    							"inHospDeptCode":$json_msg[40].value,		//入院科室编码
+    							"inHospDeptName":$json_msg[41].value,		//入院科室名称
+    							"outHospDeptCode":$json_msg[42].value,		//出院科室编码
+    							"outHospDeptName":$json_msg[43].value,		//出院科室名称
+    							"physicianCode":$json_msg[44].value,			//医师工号
+    							"physicianName":$json_msg[45].value,			//医师姓名
+    							"physicianLevel":$json_msg[11].value,		//医师级别
+    							"isRemote":$json_msg[25].value,				//异地就医标识
+    							"medInsTotalCost":$json_msg[19].value,		//医保内金额
+    							"totalCost":$json_msg[20].value,				//总费用
+    							"treatmentType":$json_msg[24].value,			//待遇类型
+    							"disSoldierSign":$json_msg[26].value,		//一至六级残疾军人待核标志
+    							"becWarPubSign":$json_msg[27].value,			//因战因公标志
+    							"healType":$json_msg[28].value,				//保健类别
+    							"inpaArea":$json_msg[29].value,				//病区
+    							"medRecordCode":$json_msg[30].value,			//病案号
+    							"liveHospStatus":$json_msg[32].value,		//住院状态
+    							"isIncrement":increment,			//是否增量
+    							"insuHandId":$json_msg[46].value,				//保险经办ID
+    							"dataSource":$json_msg[47].value,			//上传来源
+    							"operationType":$json_msg[48].value         //主单操作类型
+    						},                   
+    		               	"hospitalClaimDetails":hospitalClaimDetails
+    					}
+                	//}
+                }),  
+                contentType: "application/json; charset=utf-8",  
+                dataType: "json",  
+                success: function(data) {	
+                	
+                	if(data.respInfo.resultCode!="0000")
+               		{
+               			alert(data.respInfo.resultMsg);
+               		}
+                	else
+                	{
+                		var $json_check = $(".sh-jg-table");
+                    	var checkHtml = "<tr>";//存储数据的变量
+                    	 $.each(data.respData,function(infoIndex,info){
+                             checkHtml += "<td>"+(infoIndex+1)+"</td>";
+                             checkHtml += "<td>"+info["ruleName"]+"</td>";
+                            // checkHtml += "<td>"+info["detailCode"]+"</td>";
+                             checkHtml += "<td>"+info["serviceDate"]+"</td>";
+                             checkHtml += "<td>"+info["productCode"]+"</td>";
+                             checkHtml += "<td>"+info["productName"]+"</td>";
+                             checkHtml += "<td>"+info["message"]+"</td>";
+                             checkHtml += "</tr>"
+                         });
+                         $json_check.append(checkHtml);//显示处理后的数据
+                         
+                         $(".BgDiv3").css("z-index","100");
+                         $(".BgDiv3").css({ display: "block", height: $(document).height()});
+                         $(".DialogDiv3").css("top", "10%");
+                         $(".DialogDiv3").css("display", "block");
+                         document.documentElement.scrollTop = 0;
+					}
+                	
+                     
+                   // $('#result').text(JSON.stringify(data));  
+                } // 注意不要在此行增加逗号  
+            });
+        }
+        
+        $(".BgDiv3,#back,#confirm").click(function() {
+            $(".BgDiv3").css("display", "none");
+            $(".DialogDiv3").css("display", "none");
+        });
+
+        /*重置按钮*/
+        $("#reset").click(function(){
+            /*就诊信息*/
+            var lens = $(".jk-msg-table tr input").length;
+            $(".yn-zl").prop("checked",false);
+            for(var i=0;i<lens;i++){
+                $(".jk-msg-table tr input")[i].value=" ";
+            }
+            /*处方信息*/
+            var len = $(".cf-msg-table tr").length;
+            var chk_len = $(".sh-jg-table tr").length;
+            var count =0;
+            var limit=len;
+            for(limit--;limit>0;){
+                count++;
+                $(".cf-msg-table tr")[1].remove()
+                if(count==limit){
+                    break;
+                }
+            }
+            var unit = chk_len;
+            for(unit--;unit>0;){
+                count++;
+                $(".sh-jg-table tr")[1].remove()
+                if(count==unit){
+                    break;
+                }
+            }
+        });
+
+        /*选择开方原因*/
+        $(".check1").click(function(){
+            $(".check2").prop("checked",false);
+            $(".text-area").val(" ");
+        });
+        $(".check2").click(function(){
+            $(".check1").prop("checked",false);
+        });
+
+        $("a,button").focus(function(){this.blur()});
+    });
+
+</script>
+
+</body>
+</html>

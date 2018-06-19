@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.shuxin.mapper.ruleengine.RuleDCCFYPZLYCMapper">
+  
+  <select id="selectRuleDCCFYPZLYC" resultType="java.util.HashMap">
+  	select to_number(t.xyzlsl) xyzlsl,to_number(t.zcyzlsl) zcyzlsl,to_number(t.zyypzlsl) zyypzlsl from t_dccfypzlyc t where rownum=1
+  </select>
+
+</mapper>

@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.shuxin.mapper.ruleengine.RuleMGBZFYZESHMapper">
+
+<select id="selectSpecialDiseasesInfo" resultType="java.util.HashMap">
+	select t.xdsjqjlx,t.xdjey,t.tsxx,t.yxdjey,t.ytsxx,m.diagnosis_code from t_mgbzfyzesh t ,t_midiagnosis m 
+	where m.adaption_package_code=t.bzbm 
+	and m.adaption_package_code like 'BZ%' 
+	and m.diagnosis_code in 
+	<foreach item="diagnosisCode" index="index" collection="list" open="(" separator="," close=")">  
+           #{diagnosisCode}
+    </foreach>
+    order by m.diagnosis_code
+</select>
+
+<select id="selectSpecialPatientYears" resultType="java.lang.String">
+<!--  
+   select 
+    decode(EXTRACT(year from sysdate)-EXTRACT(year from t.sxsj),'0','1','1','2','2','3','3','4','5') years 
+    from t_tb_mghzdj_hz t 
+    where t.sfzhm = #{patIdCard}
+    -->
+    select trunc((sysdate - t.sxsj),2) result from t_tb_mghzdj_hz t 
+    where t.sfzhm = #{patIdCard}
+</select>
+
+</mapper>

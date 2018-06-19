@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.shuxin.mapper.DrugCatalogMapper">
+
+<select id="selectDrugCatalogVoPage" resultType="java.util.HashMap">
+	select t.id,
+       t.drug_code,
+       t.new_drug_code,
+       t.drug_name,
+       t.Dosage,
+       t.min_package,
+       t.Route_medication,
+       t.formats,
+       t.unit,
+       t.price,
+       t.manufacturer,
+       t.self_pay,
+       (select d.dict_name from t_dictionary d where 
+       d.DICT_TYPE_CODE='daf7294103544be48b9e6ced3e909028'
+        and d.DICT_CODE=t.limit_treatment) limit_treatment,
+       t.remark,
+       decode(t.DRUG_TYPE,'1','西药','2','中成药','3','中药饮片',t.DRUG_TYPE) DRUG_TYPE,
+       t.update_user,
+       to_char(t.update_time,'yyyy-mm-dd hh24:mi:ss') update_time
+  from t_drugs_catalog t
+  <where>
+  		<if test=" drugCode != null and drugCode != '' ">
+             drug_code like '%${drugCode}%'
+        </if>
+        <if test=" drugName != null and drugName != '' ">
+            and drug_name like '%${drugName}%'
+        </if>
+  </where>
+  		order by drug_code  
+</select>
+
+<select id="selectExistDrugCatalog" resultType="java.lang.Integer">
+	select count(1) from t_drugs_catalog t where t.drug_code=#{drugCode} 
+     	<if test=" id != null and id != '' ">
+     		and id != #{id}
+     	</if>
+</select>
+
+<insert id="addDrugCatalogHistory">
+	insert into t_drugs_catalog_opt
+  (id,
+   drug_code,
+   new_drug_code,
+   drug_name,
+   Dosage,
+   formats,
+   unit,
+   price,
+   min_package,
+   Route_medication,
+   manufacturer,
+   self_pay,
+   limit_treatment,
+   remark,
+   DRUG_TYPE,
+   opt_type,
+   create_time,
+   create_user,
+   update_time,
+   update_user)
+  select id,
+         drug_code,
+         new_drug_code,
+         drug_name,
+         Dosage,
+         formats,
+         unit,
+         price,
+         min_package,
+   		 Route_medication,
+         manufacturer,
+         self_pay,
+         limit_treatment,
+         remark,
+         DRUG_TYPE,
+         #{optType} opt_type,
+         sysdate create_time,
+         #{loginName} create_user,
+         sysdate update_time,
+         #{loginName} update_user
+    from t_drugs_catalog t
+   where t.id in
+     <foreach item="id" index="index" collection="list" open="(" separator="," close=")">  
+            #{id}
+     </foreach>
+</insert>
+
+<select id="searchDrugCatalogHistroy" resultType="java.util.HashMap">
+	select t.id,
+       t.drug_code,
+       t.new_drug_code,
+       t.drug_name,
+       t.Dosage,
+       t.min_package,
+       t.Route_medication,
+       t.formats,
+       t.unit,
+       t.price,
+       t.manufacturer,
+       t.self_pay,
+       (select d.dict_name from t_dictionary d where 
+       d.DICT_TYPE_CODE='daf7294103544be48b9e6ced3e909028'
+        and d.DICT_CODE=t.limit_treatment) limit_treatment,
+       t.remark,
+       decode(t.DRUG_TYPE,'1','西药','2','中成药','3','中药饮片',t.DRUG_TYPE) DRUG_TYPE,
+       t.opt_type,
+       t.update_user,
+       to_char(t.update_time,'yyyy-mm-dd hh24:mi:ss') update_time
+  from t_drugs_catalog_opt t
+  order by t.update_time desc
+</select>
+
+<update id="importDrugCatalog">
+	begin
+		<foreach collection="list" item="option" index="index" >
+		    insert into t_drugs_catalog_opt (id,drug_code,new_drug_code,drug_name,Dosage,formats,unit,price, min_package,Route_medication,Manufacturer,self_pay,remark,DRUG_TYPE,limit_treatment,opt_type,create_time,create_user,update_time,update_user)
+			select id,drug_code,new_drug_code,drug_name,Dosage,formats,unit,price,min_package,Route_medication,Manufacturer,self_pay,remark,DRUG_TYPE,limit_treatment,'导入更新' opt_type, sysdate create_time,#{loginName} create_user,sysdate update_time,#{loginName} update_user
+			from t_drugs_catalog where drug_code =#{option.field0};
+			
+            insert into t_drugs_catalog_opt(id,drug_code,new_drug_code,drug_name,DRUG_TYPE,Dosage,formats,unit,price, min_package,Route_medication,Manufacturer,self_pay,limit_treatment,remark,opt_type,create_time,create_user,update_time,update_user)
+            select id,drug_code,new_drug_code,drug_name,DRUG_TYPE,Dosage,formats,unit,price, min_package,Route_medication,Manufacturer,self_pay,limit_treatment,remark,'导入新增' opt_type,sysdate create_time,#{loginName} create_user,sysdate update_time,#{loginName} update_user
+            from (select #{option.field14} id, #{option.field0} drug_code,#{option.field1} new_drug_code,#{option.field2} drug_name,#{option.field3} DRUG_TYPE,#{option.field4} Dosage,
+            #{option.field5} formats,#{option.field6} unit,#{option.field7} price,#{option.field8} min_package,#{option.field9} Route_medication,
+            #{option.field10} Manufacturer,#{option.field11} self_pay,#{option.field12} limit_treatment,#{option.field13} remark from dual)  t where not exists
+			(select 1 from t_drugs_catalog t1 where t1.drug_code=t.drug_code);
+            
+            merge into t_drugs_catalog t1
+            using (select #{option.field0} drug_code,#{option.field1} new_drug_code,#{option.field2} drug_name,#{option.field3} DRUG_TYPE,#{option.field4} Dosage,
+            #{option.field5} formats,#{option.field6} unit,#{option.field7} price,#{option.field8} min_package,#{option.field9} Route_medication,
+            #{option.field10} Manufacturer,#{option.field11} self_pay,#{option.field12} limit_treatment,#{option.field13} remark from dual) t2
+            on (t1.drug_code=t2.drug_code)
+            WHEN MATCHED THEN
+               update set t1.new_drug_code=t2.new_drug_code,t1.drug_name=t2.drug_name,t1.formats=t2.formats,t1.unit=t2.unit,t1.limit_treatment=t2.limit_treatment,
+                          t1.price=t2.price,t1.Manufacturer=t2.Manufacturer,t1.self_pay=t2.self_pay,t1.Dosage=t2.Dosage,t1.DRUG_TYPE=t2.DRUG_TYPE,
+                          t1.min_package=t2.min_package,t1.Route_medication=t2.Route_medication,t1.remark=t2.remark,t1.update_time=sysdate,t1.update_user=#{loginName}
+            WHEN NOT MATCHED THEN
+               insert (id,drug_code,new_drug_code,drug_name,DRUG_TYPE,Dosage,formats,unit,price, min_package,Route_medication,Manufacturer,self_pay,limit_treatment,remark,create_time,create_user,update_time,update_user)
+               VALUES
+               (#{option.field14},#{option.field0},#{option.field1},#{option.field2},#{option.field3},#{option.field4},#{option.field5},#{option.field6},#{option.field7},#{option.field8},#{option.field9},#{option.field10},#{option.field11},#{option.field12},#{option.field13},sysdate,#{loginName},sysdate,#{loginName});
+              
+        </foreach>
+	end;
+</update>
+
+<select id="selectDrugType" resultType="java.util.HashMap">
+	select DRUG_CODE, new_drug_code, DRUG_TYPE
+	  from t_drugs_catalog t
+	 where t.DRUG_CODE in 
+		   <foreach item="claimDetail" index="index" collection="list" open="(" separator="," close=")">  
+                #{claimDetail.productCode}
+           </foreach>
+	    or t.new_drug_code in 
+		  <foreach item="claimDetail" index="index" collection="list" open="(" separator="," close=")">  
+                #{claimDetail.productCode}
+           </foreach>
+	 order by t.drug_type
+</select>
+
+</mapper>

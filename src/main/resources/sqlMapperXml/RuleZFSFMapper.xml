@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.shuxin.mapper.ruleengine.RuleZFSFMapper">
+
+<select id="selectRepeatDrugInfo" resultType="java.util.HashMap">
+	    select t.tsxx,t.sfcks,b.project_code
+  from t_zfsf_fzb t, t_repeat_charge_mapping a, t_repeat_charge_mapping b
+ where t.xmbmza = a.project_group_code
+   and t.zfxmbmzb = b.project_group_code
+   and a.project_type = 'A'
+   and b.project_type = 'B'
+   and a.project_code in 
+	<foreach item="hospitalClaim" index="index" collection="list" open="(" separator="," close=")">  
+          #{hospitalClaim.productCode}
+   	</foreach>
+   and b.project_code in 
+   <foreach item="hospitalClaim" index="index" collection="list" open="(" separator="," close=")">  
+          #{hospitalClaim.productCode}
+   	</foreach>   
+   	
+   <!--  	select t.tsxx,t.sfcks,b.project_code,a.project_code project_code_a
+  from t_zfsf_fzb t, t_repeat_charge_mapping a, t_repeat_charge_mapping b
+  where t.xmbmza = a.project_group_code
+   and t.zfxmbmzb = b.project_group_code
+   and a.project_type = 'A'
+   and b.project_type = 'B'  -->
+   	
+   	
+</select>
+
+</mapper>

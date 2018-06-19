@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.shuxin.mapper.ruleengine.RuleZYYPCLMapper">
+
+<select id="selectPiecesExcessInfo" resultType="java.util.HashMap">
+	<!--  select t.PTBRXLK,t.PTBRTS,t.TSBRXLK,t.TSBRTS,t.SFJCLXGB,t.TSXX from t_zyypcl t
+ 	where to_char(t.XMBM) =#{drugCode} or t.TDYPBM=#{drugCode}  -->
+ 	
+ 	select t.PTBRXLK,t.PTBRTS,t.TSBRXLK,t.TSBRTS,t.SFJCLXGB,t.TSXX,to_char(t.XMBM) XMBM, t.TDYPBM from t_zyypcl t
+</select>
+
+</mapper>

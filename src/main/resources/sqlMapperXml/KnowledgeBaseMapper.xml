@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.shuxin.mapper.KnowledgeBaseMapper">
+
+<select id="selectKnowledgeBaseInfo" resultType="java.util.HashMap">
+	${sql}
+</select>
+
+<select id="selectExistKnowledgeBase" resultType="java.lang.Integer">
+	select count(1) from ${tableName} where
+	 ${condition}
+	<if test=" id != null and id != '' ">
+     		and id != #{id}
+    </if>
+</select>
+
+<insert id="addKnowledgeBase">
+	insert into ${tableName} (${columnName}) values (${columnValue})
+</insert>
+
+<update id="updateKnowledgeBase">
+    update ${tableName} set ${columnName} where id = #{id}
+</update>
+
+<delete id="delKnowledgeBase">
+	delete from ${tableName} where id in
+     <foreach item="id" index="index" collection="list" open="(" separator="," close=")">  
+            #{id}
+     </foreach>
+</delete>
+ <update id="daoruData" parameterType="java.util.HashMap">
+   	   ${sql}
+   </update>
+   <insert id="addKnowledgeBaseOpt">
+   	   begin
+   	    <foreach collection="list" item="option" index="index" >
+   	   	 insert into ${option.tableName}_opt (${option.columnName},opt_type) values (${option.columnValue},#{option.optType});
+   	   	 </foreach>
+   	   end;
+   </insert>
+   <select id="selectColumnOfKnowledgeBase" resultType="java.lang.String">
+   		select column_name from user_tab_columns where table_name=upper(#{tableName}) and column_name not in ('CREATE_TIME','CREATE_USER','UPDATE_TIME','UPDATE_USER')
+   </select>
+   <insert id="addKnowledgeBaseHistory">
+   		insert into ${tableName}_opt (${columnName}CREATE_TIME,CREATE_USER,UPDATE_TIME,UPDATE_USER,opt_type)
+   		select ${columnName}sysdate,#{loginName},sysdate,#{loginName},#{optType} from ${tableName}
+   		where id in
+     <foreach item="id" index="index" collection="list" open="(" separator="," close=")">  
+            #{id}
+     </foreach>
+   </insert>
+</mapper>

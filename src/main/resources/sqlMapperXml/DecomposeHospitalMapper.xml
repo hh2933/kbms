@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.shuxin.mapper.DecomposeHospitalMapper">
+	
+	<select id="selectDecomposeHospitalVoPage" resultType="java.util.HashMap">
+		select 
+		    id,
+		    PROJECT_CODE,
+		    PROJECT_NAME,
+		    unit,
+		    decode(PROJECT_TYPE,'1','ICU','手术材料项目') PROJECT_TYPE,
+		    t.update_user,
+	       to_char(t.update_time,'yyyy-mm-dd hh24:mi:ss') update_time
+	       from t_decompose_mapping t
+	       <where>
+		       <if test=" projectCode != null and projectCode != '' ">
+		             project_code like '%${projectCode}%'
+		        </if>
+		        <if test=" projectName != null and projectName != '' ">
+		            and project_name like '%${projectName}%'
+		        </if>
+		        <if test=" projectType != null and projectType != '' ">
+		            and PROJECT_TYPE = #{projectType}
+		        </if>
+	        </where>
+	        order by project_code
+	</select>
+	
+	<select id="selectExistDecomposeHospital" resultType="java.lang.Integer">
+		select count(1) from t_decompose_mapping t
+		where  t.project_code=#{projectCode} 
+		<if test=" id != null and id != '' ">
+	   		and id != #{id}
+	   	</if>
+	</select>
+	
+	<insert id="addDecomposeHospitalHistory">
+		insert into t_decompose_mapping_opt
+		(
+			id,
+		    PROJECT_CODE,
+		    PROJECT_NAME,
+		    PROJECT_TYPE,
+		    unit,
+		    OPT_TYPE,
+			create_time,
+		   create_user,
+		   update_time,
+		   update_user
+		)
+		select
+			id,
+		    PROJECT_CODE,
+		    PROJECT_NAME,
+		    PROJECT_TYPE,
+		    unit,
+		     #{optType} opt_type,
+			 sysdate create_time,
+        	 #{loginName} create_user,
+         	sysdate update_time,
+         	#{loginName} update_user
+         	from t_decompose_mapping
+         	where id in
+         	 <foreach item="id" index="index" collection="list" open="(" separator="," close=")">  
+            	#{id}
+    		 </foreach>
+	</insert>
+	
+	<select id="selectDecomposeHospitalHistory" resultType="java.util.HashMap">
+		select
+		     id,
+		    PROJECT_CODE,
+		    PROJECT_NAME,
+		    decode(PROJECT_TYPE,'1','ICU','手术材料项目') PROJECT_TYPE,
+		    unit,
+		    OPT_TYPE,
+		    to_char(update_time,'yyyy-mm-dd hh24:mi:ss') update_time,
+		   update_user
+		   from t_decompose_mapping_opt
+		   order by update_time desc
+	</select>
+	
+	<update id="importDecomposeHospital">
+	begin
+		<foreach collection="list" item="option" index="index" >
+		    insert into t_decompose_mapping_opt (id,PROJECT_CODE,PROJECT_NAME,unit,project_type,opt_type,create_time,create_user,update_time,update_user)
+			select id,PROJECT_CODE,PROJECT_NAME,unit,project_type,'导入更新' opt_type, sysdate create_time,#{loginName} create_user,sysdate update_time,#{loginName} update_user
+			from t_decompose_mapping where PROJECT_CODE =#{option.field1};
+			
+			insert into t_decompose_mapping_opt (id,PROJECT_CODE,PROJECT_NAME,unit,project_type,opt_type,create_time,create_user,update_time,update_user)
+			select id,PROJECT_CODE,PROJECT_NAME,unit,project_type,'导入新增' opt_type,sysdate create_time,#{loginName} create_user,sysdate update_time,#{loginName} update_user from
+			(select #{option.field4} id,#{option.field0} PROJECT_CODE,#{option.field1} PROJECT_NAME
+			,#{option.field2} unit,#{option.field3} project_type from dual) t where not exists
+			(select 1 from t_decompose_mapping t1 where t1.PROJECT_CODE=t.PROJECT_CODE);			
+			
+            merge into t_decompose_mapping t1
+            using (select #{option.field0} PROJECT_CODE,#{option.field1} PROJECT_NAME
+			,#{option.field2} unit,#{option.field3} project_type from dual) t2
+            on (t1.PROJECT_CODE=t2.PROJECT_CODE)
+            WHEN MATCHED THEN
+               update set t1.PROJECT_NAME=t2.PROJECT_NAME,
+                          t1.project_type=t2.project_type,t1.unit=t2.unit,t1.update_time=sysdate,t1.update_user=#{loginName}
+            WHEN NOT MATCHED THEN
+               insert (id,PROJECT_CODE,PROJECT_NAME,unit,project_type,create_time,create_user,update_time,update_user)
+               VALUES
+               (#{option.field4},#{option.field0},#{option.field1},#{option.field2},#{option.field3},sysdate,#{loginName},sysdate,#{loginName});
+              
+        </foreach>
+		end;
+	</update>
+	
+</mapper>

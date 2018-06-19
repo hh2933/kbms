@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.shuxin.mapper.MIStandardMapMapper" >
+ <resultMap id="MIStandardMapResultMap" type="java.util.Map">
+    
+       <result column="id" property="id" jdbcType="VARCHAR"/>
+        <result column="project_code" property="projectCode" jdbcType="VARCHAR"/>
+        <result column="project_name" property="projectName" jdbcType="VARCHAR"/>
+        <result column="standard_code" property="standardCode" jdbcType="VARCHAR"/>
+        <result column="standard_name" property="standardName" jdbcType="VARCHAR"/>
+        
+        <result column="remark" property="remark" jdbcType="VARCHAR"/>
+        <result column="update_time" property="updateTime" jdbcType="VARCHAR"/>
+        <result column="update_user" property="updateUser" jdbcType="VARCHAR"/>
+          <result column="opt_type" property="optType" jdbcType="VARCHAR"/>
+ </resultMap>
+ <select id="findmiStandardDataGrid" resultMap="MIStandardMapResultMap"    >
+   SELECT
+        t.id ,
+        t.project_code  ,
+        t.project_name ,
+        t.standard_code,  
+        t.standard_name,
+        t.remark,
+        t.update_time,  
+        t.update_user
+ 
+
+        FROM
+        t_mistandardmap t
+   
+        <where>
+            <if test=" projectName!= null and projectName != '' ">
+                   t.project_name like '%${projectName}%'
+            </if>   
+            <if test=" projectCode != null and projectCode != '' ">
+               and  t.project_code like '%${projectCode}%'
+            </if>
+           
+        </where>
+      order by update_time desc,project_code 
+  </select> 
+
+   <insert id="addMIStandardMapHistory">
+   		insert into t_mistandardmap_opt (ID ,project_code,project_name,standard_code,standard_name,remark,CREATE_TIME,CREATE_USER,UPDATE_TIME,UPDATE_USER,opt_type)
+   		select ID ,project_code,project_name,standard_code,standard_name,remark,sysdate,#{loginName},sysdate,#{loginName},#{optType} from t_mistandardmap
+   		where id=#{id}
+   </insert>
+   
+   <select id="selectDetailMIStandardMap" resultMap="MIStandardMapResultMap" >
+     SELECT
+        t.id ,
+       t.project_code  ,
+        t.project_name ,
+        t.standard_code,  
+        t.standard_name,
+        t.remark,
+         to_char(t.update_time,'yyyy-mm-dd hh24:mi:ss') update_time,
+        t.update_user
+ 
+
+        FROM
+       t_mistandardmap t
+        
+        order by  t.update_time desc,t.project_code
+   
+   </select>
+   <select id="selectMIStandardMapHistory" resultMap="MIStandardMapResultMap" >
+     SELECT
+        t.id ,
+       t.project_code  ,
+        t.project_name ,
+        t.standard_code,  
+        t.standard_name,
+        t.remark,
+        to_char(t.update_time,'yyyy-mm-dd hh24:mi:ss') update_time,
+        t.update_user,
+         t.opt_type
+       
+        FROM
+        t_mistandardmap_opt t
+        
+        order by  t.update_time desc,t.project_code
+   
+   </select>
+      <update id="daoruData">
+	begin
+		<foreach collection="list" item="option" index="index" >
+		    insert into t_mistandardmap_opt (id ,project_code,project_name,standard_code,standard_name,remark,opt_type,create_time,create_user,update_time,update_user)
+			select id ,project_code,project_name,standard_code,standard_name,remark,'导入更新' opt_type, sysdate create_time,#{loginName} create_user,sysdate update_time,#{loginName} update_user
+			from  t_mistandardmap where project_code =#{option.field0};
+						
+            insert into t_mistandardmap_opt(id ,project_code,project_name,standard_code,standard_name,remark,opt_type,create_time,create_user,update_time,update_user)
+            select id ,project_code,project_name,standard_code,standard_name,remark,'导入新增' opt_type,sysdate create_time,#{loginName} create_user,sysdate update_time,#{loginName} update_user from
+            (select #{option.field5} id, #{option.field0} project_code,#{option.field1} project_name,
+            #{option.field2}  standard_code, #{option.field3}  standard_name, #{option.field4}  remark from dual) t where not exists
+			(select 1 from t_mistandardmap t1 where t1.project_code=t.project_code);
+            
+            merge into t_mistandardmap t1
+            using (select #{option.field0} project_code,#{option.field1} project_name,
+            #{option.field2}  standard_code, #{option.field3}  standard_name, #{option.field4}  remark from dual) t2
+            on (t1.project_code=t2.project_code)
+            WHEN MATCHED THEN
+               update set t1.project_name=t2.project_name,t1.standard_code=t2.standard_code,t1.standard_name=t2.standard_name,t1.remark=t2.remark,
+                        t1.update_time=sysdate,t1.update_user=#{loginName}
+            WHEN NOT MATCHED THEN
+               insert (id ,project_code,project_name,standard_code,standard_name,remark,create_time,create_user,update_time,update_user)
+               VALUES
+              (#{option.field5},#{option.field0},#{option.field1},#{option.field2},#{option.field3},#{option.field4},sysdate,#{loginName},sysdate,#{loginName});
+            
+        </foreach>
+	end;
+</update>
+</mapper>

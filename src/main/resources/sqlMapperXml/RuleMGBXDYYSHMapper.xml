@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.shuxin.mapper.ruleengine.RuleMGBXDYYSHMapper">
+
+<select id="selectSpecialDiseasesProjectInfo" resultType="java.util.HashMap">
+
+select t.xmbm,m.diagnosis_code,t.tsxx from t_midiagnosis m,t_mgbxdyysh t 
+where t.xdsyzbm=m.adaption_package_code
+and  t.xmbm in
+<foreach item="hospitalClaim" index="index" collection="list" open="(" separator="," close=")">  
+      #{hospitalClaim.productCode}
+</foreach>
+and m.adaption_package_code like 'BZ%'
+
+</select>
+
+</mapper>

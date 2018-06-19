@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.shuxin.mapper.ruleengine.RuleZDHLXSHMapper">
+
+<select id="selectDiagnosisIllegalInfo" resultType="java.util.HashMap">
+	select t.jbbm,d.diagnosis_name,t.xdlb from t_zdhlxsh t,t_diagnostic_catalog d 
+	where t.jbbm=d.diagnosis_code(+) and t.jbbm in
+	<foreach item="diagnosisCode" index="index" collection="list" open="(" separator="," close=")">  
+         #{diagnosisCode}
+  	</foreach>
+</select>
+
+</mapper>

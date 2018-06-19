@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.shuxin.mapper.RepeatChargeMapper">
+
+	<select id="selectRepeatChargeVoPage" resultType="java.util.HashMap">
+		select 
+		    id,
+		    PROJECT_GROUP_CODE,
+		    PROJECT_CODE,
+		    PROJECT_NAME,
+		    decode(PROJECT_TYPE,'A','项目编码A组','项目编码B组') PROJECT_TYPE,
+		    PROMPT,
+		    REMARK,
+		    t.update_user,
+	       to_char(t.update_time,'yyyy-mm-dd hh24:mi:ss') update_time
+	       from t_repeat_charge_mapping t
+	       <where>
+		       <if test=" projectCode != null and projectCode != '' ">
+		             project_code like '%${projectCode}%'
+		        </if>
+		        <if test=" projectName != null and projectName != '' ">
+		            and project_name like '%${projectName}%'
+		        </if>
+		         <if test=" projectGroupCode != null and projectGroupCode != '' ">
+		            and project_group_code like '%${projectGroupCode}%'
+		        </if>
+		        <if test=" projectType != null and projectType != '' ">
+		            and PROJECT_TYPE = #{projectType}
+		        </if>
+	        </where>
+	        order by project_code
+	</select>
+	
+	<select id="selectExistRepeatCharge" resultType="java.lang.Integer">
+		select count(1) from t_repeat_charge_mapping t
+		where  t.project_code=#{projectCode} and t.PROJECT_GROUP_CODE=#{projectGroupCode}
+		<if test=" id != null and id != '' ">
+	   		and id != #{id}
+	   	</if>
+	</select>
+	
+	<insert id="addRepeatChargeHistory">
+		insert into t_repeat_charge_mapping_opt
+		(
+			id,
+			PROJECT_GROUP_CODE,
+		    PROJECT_CODE,
+		    PROJECT_NAME,
+		    PROJECT_TYPE,
+		    PROMPT,
+		    REMARK,
+		    OPT_TYPE,
+			create_time,
+		   create_user,
+		   update_time,
+		   update_user
+		)
+		select
+			id,
+			PROJECT_GROUP_CODE,
+		    PROJECT_CODE,
+		    PROJECT_NAME,
+		    PROJECT_TYPE,
+		    PROMPT,
+		    REMARK,
+		     #{optType} opt_type,
+			 sysdate create_time,
+        	 #{loginName} create_user,
+         	sysdate update_time,
+         	#{loginName} update_user
+         	from t_repeat_charge_mapping
+         	where id in
+         	 <foreach item="id" index="index" collection="list" open="(" separator="," close=")">  
+            	#{id}
+    		 </foreach>
+	</insert>
+	
+	<select id="selectRepeatChargeHistory" resultType="java.util.HashMap">
+		select
+		     id,
+			PROJECT_GROUP_CODE,
+		    PROJECT_CODE,
+		    PROJECT_NAME,
+		    PROJECT_TYPE,
+		    PROMPT,
+		    REMARK,
+		    OPT_TYPE,
+		    to_char(update_time,'yyyy-mm-dd hh24:mi:ss') update_time,
+		   update_user
+		   from t_repeat_charge_mapping_opt
+		   order by update_time desc
+	</select>
+	
+	<update id="importRepeatChargeMapping">
+	begin
+		<foreach collection="list" item="option" index="index" >
+		    insert into t_repeat_charge_mapping_opt (id,PROJECT_GROUP_CODE,PROJECT_CODE,PROJECT_NAME,project_type,prompt,remark,opt_type,create_time,create_user,update_time,update_user)
+			select id,PROJECT_GROUP_CODE,PROJECT_CODE,PROJECT_NAME,project_type,prompt,remark,'导入更新' opt_type, sysdate create_time,#{loginName} create_user,sysdate update_time,#{loginName} update_user
+			from t_repeat_charge_mapping where PROJECT_CODE =#{option.field1} and PROJECT_GROUP_CODE =#{option.field0};
+			
+			insert into t_repeat_charge_mapping_opt (id,PROJECT_GROUP_CODE,PROJECT_CODE,PROJECT_NAME,project_type,prompt,remark,opt_type,create_time,create_user,update_time,update_user)
+			select id,PROJECT_GROUP_CODE,PROJECT_CODE,PROJECT_NAME,project_type,prompt,remark,'导入新增' opt_type,sysdate create_time,#{loginName} create_user,sysdate update_time,#{loginName} update_user from
+			(select #{option.field6} id,#{option.field0} PROJECT_GROUP_CODE,#{option.field1} PROJECT_CODE,#{option.field2} PROJECT_NAME
+			,upper(#{option.field3}) project_type,#{option.field4} remark,#{option.field5} prompt from dual) t where not exists
+			(select 1 from t_repeat_charge_mapping t1 where t1.PROJECT_CODE=t.PROJECT_CODE and t1.PROJECT_GROUP_CODE=t.PROJECT_GROUP_CODE);			
+			
+            merge into t_repeat_charge_mapping t1
+            using (select #{option.field0} PROJECT_GROUP_CODE,#{option.field1} PROJECT_CODE,#{option.field2} PROJECT_NAME
+			,upper(#{option.field3}) project_type,#{option.field4} remark,#{option.field5} prompt  from dual) t2
+            on (t1.PROJECT_CODE=t2.PROJECT_CODE and t1.PROJECT_GROUP_CODE=t2.PROJECT_GROUP_CODE)
+            WHEN MATCHED THEN
+               update set t1.PROJECT_NAME=t2.PROJECT_NAME,t1.project_type=t2.project_type,
+               t1.remark=t2.remark,t1.prompt=t2.prompt,t1.update_time=sysdate,
+               t1.update_user=#{loginName}
+            WHEN NOT MATCHED THEN
+               insert (id,PROJECT_GROUP_CODE,PROJECT_CODE,PROJECT_NAME,project_type,prompt,remark,create_time,create_user,update_time,update_user)
+               VALUES
+               (#{option.field6},#{option.field0},#{option.field1},#{option.field2},upper(#{option.field3}),#{option.field4},#{option.field5},sysdate,#{loginName},sysdate,#{loginName});
+              
+        </foreach>
+		end;
+	</update>
+
+</mapper>
