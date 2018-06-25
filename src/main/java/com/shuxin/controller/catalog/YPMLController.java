@@ -47,8 +47,6 @@ public class YPMLController extends BaseController {
      * @author zengj 
      * @Description 导出药品目录模板
      * @Date 2018-6-7 9:53
-     * @Param [response]
-     * @return void
      */
     @RequestMapping("/exportTemp")
     @ResponseBody
@@ -60,8 +58,6 @@ public class YPMLController extends BaseController {
      * @author zengj
      * @Description 导出全部
      * @Date 2018-6-13 9:21
-     * @Param [response]
-     * @return void
      */
     @RequestMapping("/exportData")
     @ResponseBody
@@ -76,8 +72,6 @@ public class YPMLController extends BaseController {
  * @author zengj
  * @Description 导出未解析目录
  * @Date 2018-6-13 9:21
- * @Param [response]
- * @return void
  */
     @RequestMapping("/exportWjxData")
     @ResponseBody
@@ -92,8 +86,6 @@ public class YPMLController extends BaseController {
      * @author zengj
      * @Description 新增单条目录
      * @Date 2018-6-7 10:33
-     * @Param [ypml]
-     * @return java.lang.Object
      */
     @PostMapping("/add")
     @ResponseBody
@@ -112,8 +104,6 @@ public class YPMLController extends BaseController {
      * @author zengj
      * @Description 修改单条目录
      * @Date 2018-6-7 9:54
-     * @Param [drugCatalogVo]
-     * @return java.lang.Object
      */
     @PostMapping("/edit")
     @ResponseBody
@@ -126,8 +116,6 @@ public class YPMLController extends BaseController {
      * @author zengj
      * @Description 查询列表
      * @Date 2018-6-8 9:06
-     * @Param [drugCatalogVo, page, rows, sort, order]
-     * @return java.lang.Object
      */
     @RequestMapping("/findPage")
     @ResponseBody
@@ -154,8 +142,6 @@ public class YPMLController extends BaseController {
      * @author zengj
      * @Description 导入excel
      * @Date 2018-6-11 16:24
-     * @Param [file, response]
-     * @return java.lang.Object
      */
     @RequestMapping("/importExcel")
     @ResponseBody
@@ -203,8 +189,6 @@ public class YPMLController extends BaseController {
      * @author zengj
      * @Description 导出重复数据
      * @Date 2018-6-12 12:12
-     * @Param [response]
-     * @return void
      */
     @RequestMapping("/exportRepeat")
     @ResponseBody
@@ -217,8 +201,6 @@ public class YPMLController extends BaseController {
      * @author zengj
      * @Description 验证excel并提取数据
      * @Date 2018-6-19 9:30
-     * @Param [workbook, importList, repeatList]
-     * @return java.util.List<java.util.Map<java.lang.String,java.lang.String>>
      */
     private List<Map<String, String>> validateExportData(Workbook workbook,List<YPML> importList,List<Integer> repeatList) {
         Sheet sheet = workbook.getSheetAt(0);
@@ -308,8 +290,6 @@ public class YPMLController extends BaseController {
      * @author zengj
      * @Description cell的值赋予ypml对象
      * @Date 2018-6-12 16:56
-     * @Param [ypml, i, value]
-     * @return void
      */
     public void setImportValue( YPML ypml, int i , Object value){
         switch (i){
@@ -348,17 +328,12 @@ public class YPMLController extends BaseController {
      * @author zengj
      * @Description 解析单条目录
      * @Date 2018-6-19 12:14
-     * @Param [id]
-     * @return java.lang.Object
      */
     @RequestMapping("/explain")
     @ResponseBody
     public Object explain(String id){
         YPML ypml = ypmlService.selectById(id);
         String sm = ypml.getSm();
-        if (sm == null || sm.equals("")){
-            return renderSuccess("该条目录没有解析说明，不用解析");
-        }
         if (ypml.getJxzt() != 1){
             return renderSuccess("该条目录已解析过，不能重复解析");
         }
@@ -367,12 +342,10 @@ public class YPMLController extends BaseController {
     }
 
     /*
- * @author zengj
- * @Description 全部解析
- * @Date 2018-6-19 12:14
- * @Param [id]
- * @return java.lang.Object
- */
+     * @author zengj
+     * @Description 全部解析
+     * @Date 2018-6-19 12:14
+     */
     @RequestMapping("/explainAll")
     @ResponseBody
     public Object explainAll(){
@@ -380,9 +353,24 @@ public class YPMLController extends BaseController {
         EntityWrapper<YPML> wrapper= new EntityWrapper<>(sYpml);
         wrapper.eq("jxzt",1);
         List<YPML> ypmlList = ypmlService.selectList(wrapper);
+        Set<YPML> ypmlSet = ypmlService.selectAllSet();
         for (YPML ypml : ypmlList) {
             ypmlService.jx(ypml);
         }
         return renderSuccess("本次成功解析[" + ypmlList.size() + "]条药品目录");
+    }
+
+    /*
+     * @author zengj
+     * @Description 解析状态设为手动解析
+     * @Date 2018-6-20 12:07
+     */
+    @RequestMapping("/setJxzt")
+    @ResponseBody
+    public Object setJxzt(String id){
+        YPML ypml = ypmlService.selectById(id);
+        ypml.setJxzt(6);
+        ypmlService.updateById(ypml);
+        return renderSuccess("操作成功");
     }
 }

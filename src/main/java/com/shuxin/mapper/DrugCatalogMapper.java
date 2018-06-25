@@ -1,15 +1,17 @@
 
 package com.shuxin.mapper;
 
-import java.util.List;
-import java.util.Map;
-
 import com.baomidou.mybatisplus.mapper.BaseMapper;
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.shuxin.model.DrugCatalog;
 import com.shuxin.model.ruleengine.HospitalClaimDetail;
 import com.shuxin.model.vo.DrugCatalogVo;
+import org.springframework.stereotype.Component;
 
+import java.util.List;
+import java.util.Map;
+
+@Component
 public interface DrugCatalogMapper  extends BaseMapper<DrugCatalog>{
 
 	public List<Map<String, Object>> selectDrugCatalogVoPage(Pagination page, Map<String, Object> params);

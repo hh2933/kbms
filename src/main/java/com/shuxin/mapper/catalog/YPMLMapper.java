@@ -13,7 +13,7 @@ import java.util.Set;
 /**
  * Created by zengj on 2018-6-7.
  */
-@Component(value = "YPMLMapper")
+@Component
 @Mapper
 public interface YPMLMapper extends BaseMapper<YPML>{
     public int  selectExist(YPML ypml);

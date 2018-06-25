@@ -171,6 +171,8 @@
                                 return "部分解析";
                             } else if (row.JXZT == 5) {
                                 return "全部未能解析";
+                            } else if (row.JXZT == 6) {
+                                return "手动解析";
                             }
                         }
                     }, {
@@ -178,11 +180,11 @@
                         title: '<font size="3px">解析结果描述</font>',
                         field: 'JXJGMS'
                     }, {
-                        width: '7%',
+                        width: '15%',
                         title: '<font size="3px">已解析说明</font>',
                         field: 'YJXSM'
                     }, {
-                        width: '7%',
+                        width: '15%',
                         title: '<font size="3px">未能解析说明</font>',
                         field: 'WNJXSM'
                     }
@@ -372,12 +374,6 @@
                     msg: '每次只能解析一条目录！'
                 });
                 return;
-            }else if (dataChecked[0].SM == null || dataChecked[0].SM == ""){
-                parent.$.messager.alert({
-                    title: '提示',
-                    msg: '该条目录说明为空，不用解析！'
-                });
-                return;
             }else if (dataChecked[0].JXZT != 1 ){
                 parent.$.messager.alert({
                     title: '提示',
@@ -402,6 +398,34 @@
         function explainAll() {
             progressLoad();
             $.post('${path }/catalog/ypml/explainAll', {
+            }, function (result) {
+                if (result.success) {
+                    parent.$.messager.alert('提示', result.msg, 'info');
+                    dataGrid.datagrid('reload');
+                }
+                progressClose();
+            }, 'JSON');
+        }
+
+        //解析状态设为手动解析
+        function setJxzt() {
+            var dataChecked = dataGrid.datagrid('getSelections');
+            if (dataChecked.length == 0) {
+                parent.$.messager.alert({
+                    title: '提示',
+                    msg: '请选择要设为手动解析的目录！'
+                });
+                return;
+            } else if (dataChecked.length > 1) {
+                parent.$.messager.alert({
+                    title: '提示',
+                    msg: '每次只能选择一条目录！'
+                });
+                return;
+            }
+            progressLoad();
+            $.post('${path }/catalog/ypml/setJxzt', {
+                id: dataChecked[0].ID
             }, function (result) {
                 if (result.success) {
                     parent.$.messager.alert('提示', result.msg, 'info');
@@ -455,8 +479,9 @@
                 <tr>
                     <td>
                         <button class="btn-ok fs_16" id="increase" onclick="openWin('新增','${path}/catalog/add')">新增</button>
-                        <button class="btn-ok fs_16" id="increase" onclick="explain()">解析</button>
-                        <button class="btn-ok fs_16" id="increase" onclick="explainAll()">全部解析</button>
+                        <button class="btn-ok fs_16" onclick="explain()">解析</button>
+                        <button class="btn-ok fs_16" onclick="explainAll()">全部解析</button>
+                        <button class="btn-ok fs_16" onclick="setJxzt()">手动解析</button>
                         <%--<button class="btn-ok fs_16" onclick="editWin('${path}/catalog/ypml/edit')">修改</button>
                         <button class="btn-ok fs_16" id="delDrugCatalog">删除</button>--%>
                     </td>

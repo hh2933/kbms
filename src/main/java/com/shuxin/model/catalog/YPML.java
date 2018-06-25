@@ -39,7 +39,7 @@ public class YPML implements Serializable{
     private String gytj;    //给药途径
     private String sm;      //说明
     private Date drsj;      //导入时间
-    private Integer jxzt;   //解析状态(1：未开始，2已解析，3：全部解析，4：部分解析，5：全部未能解析)
+    private Integer jxzt;   //解析状态(1：未开始，2已解析，3：全部解析，4：部分解析，5：全部未能解析,6:手动解析)
     private String jxjg;    //解析结果(规则表1ID.ID;规则表2ID.ID)
     private String jxjgms;    //解析结果描述(规则表1名称;规则表2名称)
     private String yjxsm;   //已解析说明
@@ -59,6 +59,7 @@ public class YPML implements Serializable{
             case 3:return "全部解析";
             case 4:return "部分解析";
             case 5:return "全部未能解析";
+            case 6:return "手动解析";
             default:return "";
         }
     }
@@ -74,7 +75,7 @@ public class YPML implements Serializable{
     }
 
     @Basic
-    @Column(name = "YBYPBM", nullable = false, length = 32)
+    @Column(name = "YBYPBM", nullable = true, length = 32)
     public String getYbypbm() {
         return ybypbm;
     }
@@ -84,7 +85,7 @@ public class YPML implements Serializable{
     }
 
     @Basic
-    @Column(name = "YYYPBM", nullable = false, length = 32)
+    @Column(name = "YYYPBM", nullable = true, length = 32)
     public String getYyypbm() {
         return yyypbm;
     }

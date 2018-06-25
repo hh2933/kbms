@@ -11,3 +11,5 @@ gen
 /.settings/
 .classpath
 .project
+src/main/conf/dev/config/
+src/test/

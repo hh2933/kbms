@@ -2,8 +2,6 @@ package com.shuxin.model.vo;
 
 import java.math.BigDecimal;
 
-import com.baomidou.mybatisplus.annotations.TableField;
-
 public class DrugCatalogVo {
 	
 	private String id;
@@ -194,6 +192,5 @@ public class DrugCatalogVo {
 	public void setLimitTreatment(String limitTreatment) {
 		this.limitTreatment = limitTreatment;
 	}
-	
 
 }

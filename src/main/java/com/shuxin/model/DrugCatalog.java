@@ -1,14 +1,16 @@
 package com.shuxin.model;
 
-import java.io.Serializable;
-import java.math.BigDecimal;
-import java.util.Date;
-
 import com.baomidou.mybatisplus.annotations.TableField;
 import com.baomidou.mybatisplus.annotations.TableId;
 import com.baomidou.mybatisplus.annotations.TableName;
 import com.baomidou.mybatisplus.enums.FieldStrategy;
 import com.baomidou.mybatisplus.enums.IdType;
+import com.shuxin.model.catalog.YPML;
+
+import java.io.Serializable;
+import java.math.BigDecimal;
+import java.util.Date;
+import java.util.UUID;
 
 @TableName("t_drugs_catalog")
 public class DrugCatalog  implements Serializable {
@@ -260,6 +262,41 @@ public class DrugCatalog  implements Serializable {
 
 	public void setLimitTreatment(String limitTreatment) {
 		this.limitTreatment = limitTreatment;
-	}	
-	
+	}
+
+
+
+	/*
+	 * @author zengj
+	 * @Description YPML转化为DrugCatalog
+	 * @Date 2018-6-22 10:18
+	 * @Param [ypml]
+	 * @return com.shuxin.model.DrugCatalog
+	 */
+	public static DrugCatalog ypmlToDrugCatalog(YPML ypml){
+		DrugCatalog drugCatalog = new DrugCatalog();
+		drugCatalog.setDrugCode(ypml.getYbypbm());			//医保药品编码
+		drugCatalog.setNewdrugCode("");						//药品新增编码
+		drugCatalog.setDrugName(ypml.getYyypmc());			//医院药品名称
+		drugCatalog.setDrugType(ypml.getYplx().toString());	//药品类别(1:西药,2:中成药,3:中药饮片)
+		drugCatalog.setDosage(ypml.getJx());				//剂型,比如咀嚼片/注射用粉针/普通片剂等
+		drugCatalog.setFormats(ypml.getGg());				//规格
+		drugCatalog.setUnit(ypml.getDw());					//单位
+		drugCatalog.setPrice(ypml.getJg());					//价格
+		drugCatalog.setMinPack(ypml.getZxbz().toString()); 	//最小包装
+		drugCatalog.setManufacturer(ypml.getSccs());		//生产厂商
+		drugCatalog.setSelfPay(ypml.getZfbl()); 			//自付比例
+		drugCatalog.setRouteMedication(ypml.getGytj());		//给药途径
+		drugCatalog.setRemark(ypml.getSm());				//说明
+		drugCatalog.setLimitTreatment("N");					//限定就医方式
+		return drugCatalog;
+	}
+
+	public void preInsert(){
+		this.setId(UUID.randomUUID().toString().replace("-",""));
+		this.setCreateTime(new Date());
+		this.setCreateUser("自动识别");
+		this.setUpdateTime(new Date());
+		this.setUpdateUser("自动识别");
+	}
 }
