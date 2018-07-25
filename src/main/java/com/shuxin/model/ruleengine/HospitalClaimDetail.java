@@ -1,19 +1,17 @@
 package com.shuxin.model.ruleengine;
 
-import java.io.Serializable;
-import java.math.BigDecimal;
-import java.util.Date;
-
-import javax.validation.constraints.Min;
-import javax.validation.constraints.NotNull;
-
-import org.hibernate.validator.constraints.NotEmpty;
-import org.hibernate.validator.constraints.Range;
-
 import com.baomidou.mybatisplus.annotations.TableField;
 import com.baomidou.mybatisplus.annotations.TableName;
 import com.shuxin.commons.utils.Charsets;
 import com.shuxin.commons.utils.StringUtils;
+import org.hibernate.validator.constraints.NotEmpty;
+import org.hibernate.validator.constraints.Range;
+
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotNull;
+import java.io.Serializable;
+import java.math.BigDecimal;
+import java.util.Date;
 
 @TableName("T_CHARGE_DETAILS")
 public class HospitalClaimDetail implements Serializable  {
@@ -54,7 +52,7 @@ public class HospitalClaimDetail implements Serializable  {
 //	//类别名称
 //	@TableField(value = "typeName")
 //	private String typeName;
-	//三大目录类别
+	//三大目录类别1：药品，2：诊疗，3：服务设施，4：医用材料
 	@NotEmpty(message="thrCatType值不能为空")
 	@Range(min=1, max=4, message="thrCatType值无效")
 	@TableField(value = "thrCatType")

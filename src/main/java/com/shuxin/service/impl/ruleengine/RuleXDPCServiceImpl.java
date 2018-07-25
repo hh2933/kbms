@@ -39,9 +39,9 @@ public class RuleXDPCServiceImpl implements IAnalysisRuleService {
 	public List<ViolationDetail> executeRule(RuleTableInfo rule, HospitalClaim hospitalClaim,
 			List<HospitalClaimDetail> hospitalClaimDetails) {
 		
-		List<HospitalClaimDetail> projectList = new ArrayList<HospitalClaimDetail>();
-		List<HospitalClaimDetail> projectListTemp = new ArrayList<HospitalClaimDetail>();
-		List<String> productCodeTemp =new ArrayList<String>();
+		List<HospitalClaimDetail> projectList = new ArrayList<HospitalClaimDetail>();	//去掉药品的List<HospitalClaimDetail> hospitalClaimDetails
+		List<HospitalClaimDetail> projectListTemp = new ArrayList<HospitalClaimDetail>();	//ProductCode不重复的的List<HospitalClaimDetail> hospitalClaimDetails
+		List<String> productCodeTemp =new ArrayList<String>();	//不重复的ProductCode
 //		int ruleType = Integer.parseInt(rule.getRuleType());
 		List<ViolationDetail> list= null;
 		ViolationDetail violationDetail =null;
@@ -49,7 +49,7 @@ public class RuleXDPCServiceImpl implements IAnalysisRuleService {
 		for(HospitalClaimDetail hospitalClaimDetail:hospitalClaimDetails)
 		{
 			//只审核项目，不审核药品
-			if("1".equals(hospitalClaimDetail.getThrCatType()))
+			if("1".equals(hospitalClaimDetail.getThrCatType())) //三大目录类别1：药品，2：诊疗，3：服务设施，4：医用材料
 			{
 				continue;
 			}			
@@ -76,11 +76,11 @@ public class RuleXDPCServiceImpl implements IAnalysisRuleService {
 		List<Map<String, Object>> limitFrequencyList=null;
 		
 		//判断是违规还是可疑
-		if("1".equals(rule.getResultType()))
+		if("1".equals(rule.getResultType()))	//违规
 		{
-			limitFrequencyList = ruleXDPCMapper.selectLimitFrequencyIllegal(projectListTemp);
+			limitFrequencyList = ruleXDPCMapper.selectLimitFrequencyIllegal(projectListTemp);	//根据productCode查询规则具体参数
 		}
-		else
+		else	//可疑
 		{
 			limitFrequencyList = ruleXDPCMapper.selectLimitFrequencySuspicion(projectListTemp);
 		}
@@ -94,13 +94,13 @@ public class RuleXDPCServiceImpl implements IAnalysisRuleService {
 		{
 			//判断不需要审核的科室
 			if(!Constants.N_FLAG.equalsIgnoreCase
-					((String)limitFrequencyMap.get("SFSHMZJXDKS")))
+					((String)limitFrequencyMap.get("SFSHMZJXDKS")))	//"N"或者"Y"
 			{
 				boolean departmentFlag=false;
 				String[] departmentCodes =((String)limitFrequencyMap.get("SFSHMZJXDKS")).split(",");
 				for(String departmentCode:departmentCodes)
 				{
-					if(departmentCode.equals(hospitalClaim.getInHospDeptCode()))
+					if(departmentCode.equals(hospitalClaim.getInHospDeptCode())) //入院科室编码
 					{
 						departmentFlag=true;
 						break;
@@ -112,7 +112,7 @@ public class RuleXDPCServiceImpl implements IAnalysisRuleService {
 				}
 			}
 			
-			if("1".equals((String)limitFrequencyMap.get("SJJGLX")))
+			if("1".equals((String)limitFrequencyMap.get("SJJGLX"))) //时间间隔类型
 			{
 				//只审核住院
 				if(hospitalClaim.getMedTreatmentMode().equals("21") || 
@@ -222,7 +222,7 @@ public class RuleXDPCServiceImpl implements IAnalysisRuleService {
 		
 		Date date = new Date();
 		
-		if("1".equals(hospitalClaim.getLiveHospStatus()))
+		if("1".equals(hospitalClaim.getLiveHospStatus()))	//住院状态（已出院1、未出院0，门诊-1，根据是否已经出院结算做判断）
 		{
 			date = hospitalClaim.getOutHospDate();
 		}
@@ -230,7 +230,7 @@ public class RuleXDPCServiceImpl implements IAnalysisRuleService {
 		int differentDays = DateUtils.differentDays(hospitalClaim.getInHospDate(),date);
 		
 		if(Constants.Y_FLAG.equalsIgnoreCase
-				((String)limitFrequencyMap.get("ZYTSSTSW")))
+				((String)limitFrequencyMap.get("ZYTSSTSW"))	)//住院天数算头算尾
 		{
 			differentDays++;
 		}

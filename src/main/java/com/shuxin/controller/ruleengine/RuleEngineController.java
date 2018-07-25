@@ -46,7 +46,7 @@ import net.sf.json.util.JSONUtils;
 @Controller
 @RequestMapping("/request")
 public class RuleEngineController extends BaseController {
-	
+
 	//规则审核service
 	@Autowired
 	private IExamineService examineService;
@@ -56,43 +56,45 @@ public class RuleEngineController extends BaseController {
 	//明细service
 	@Autowired
 	private IHospitalClaimDetailService hospitalClaimDetailService;
-	
+
 	@Autowired
 	private IViolationDetailService violationDetailService;
-	
+
 	PropertiesLoader propertiesLoader;
-	
+
 	protected Logger logger = LogManager.getLogger(getClass());
-	
+
 	public RuleEngineController(){
 		super();
 		propertiesLoader = new PropertiesLoader("certID.properties");
 		JSONUtils.getMorpherRegistry().registerMorpher(new DateMorpher(new String[] { "yyyy-MM-dd HH:mm:ss" }));
 	}
-	
+
 	/**
 	 * 审核
 	 * @param jsonData
 	 * @return
 	 */
 	@PostMapping("/examine")
-    @ResponseBody
+	@ResponseBody
 	public String examine(@RequestBody String jsonData){
 		//System.out.println("jsonData========="+jsonData);
 		//logger.error("jsonData========="+jsonData);
+		System.out.println("----------解析开始时间---------"+System.currentTimeMillis());
 		String uuid = UUID.randomUUID().toString().replace("-", "");
-		ThreadPoolUtil.handleHISRequestInfo(jsonData,uuid);
-		ReturnResult returnResult = new ReturnResult();
+		ThreadPoolUtil.handleHISRequestInfo(jsonData,uuid);		//保存请求到t_his_request_info(id,request_info,create_date)
+		ReturnResult returnResult = new ReturnResult();	//返回给his的信息
 		RespInfo respInfo = new RespInfo();
-		
+
 		JSONObject jsonObject = JSONObject.fromObject(jsonData);
-		
+
 		//验证上传的json数据
+		System.out.println("----------时间00---------------"+System.currentTimeMillis());
 		if(!checkJsonData(jsonObject,returnResult)){
 			ThreadPoolUtil.handleViolationResult(null, JSONObject.fromObject(returnResult).toString(),uuid);
 			return JSONObject.fromObject(returnResult).toString();
 		}
-	
+		System.out.println("----------时间10---------------"+System.currentTimeMillis());
 //		JSONObject body = (JSONObject)jsonObject.get("body");
 		JSONObject reqData = (JSONObject)jsonObject.get("reqData");
 		//验证就诊信息数据格式
@@ -100,6 +102,7 @@ public class RuleEngineController extends BaseController {
 			ThreadPoolUtil.handleViolationResult(null, JSONObject.fromObject(returnResult).toString(),uuid);
 			return JSONObject.fromObject(returnResult).toString();
 		}
+		System.out.println("----------时间20---------------"+System.currentTimeMillis());
 		//验证明细列表数据格式
 //		if(!checkClaimDetailListFormatByJsonData(reqData,returnResult)){
 //			return JSONObject.fromObject(returnResult).toString();
@@ -112,23 +115,23 @@ public class RuleEngineController extends BaseController {
 		String medTreatmentMode = hospitalClaim.getMedTreatmentMode();
 		//住院状态
 		String liveHospStatus=hospitalClaim.getLiveHospStatus();
-		
+		System.out.println("----------时间22---------------"+System.currentTimeMillis());
 		ThreadPoolUtil.updateHis(hospitalClaim, uuid);
-		
+		System.out.println("----------时间23---------------"+System.currentTimeMillis());
 		List<ViolationDetail> respDatas = new ArrayList<ViolationDetail>();
 		//传给存储过程的操作类型
 		String t_type="";
-		
+
 		boolean opreationResult = false;
-		
+
 		if("3".equals(hospitalClaim.getOperationType())){	//(1、新增2、修改3、删除)
 			t_type = "2";
 		}else {
 			t_type = "1";
 		}
-		
+		System.out.println("----------时间30---------------"+System.currentTimeMillis());
 		ThreadPoolUtil.handleHospitalClaimOpt(hospitalClaim, hospitalClaimDetails);
-		
+		System.out.println("----------时间31---------------"+System.currentTimeMillis());
 		//如果删除主单信息，不需要审核直接返回结果
 		if("3".equals(hospitalClaim.getOperationType()))
 		{
@@ -160,15 +163,15 @@ public class RuleEngineController extends BaseController {
 //		boolean insert = hospitalClaimService.insertOrUpdate(hospitalClaim);
 //		//保存明细信息
 //		boolean insertBatch = hospitalClaimDetailService.insertOrUpdateBatch(hospitalClaimDetails);
-		
-		
+		System.out.println("----------时间40---------------"+System.currentTimeMillis());
+
 		//判断就医方式是门诊
-		if(medTreatmentMode.equals("11") || 
-			medTreatmentMode.equals("13") || 
-			medTreatmentMode.equals("15") || 
-			medTreatmentMode.equals("51") || 
-			medTreatmentMode.equals("71")){
-			
+		if(medTreatmentMode.equals("11") ||
+				medTreatmentMode.equals("13") ||
+				medTreatmentMode.equals("15") ||
+				medTreatmentMode.equals("51") ||
+				medTreatmentMode.equals("71")){
+
 			if(opreationResult){
 				List<ViolationDetail> violationDetails = examineService.examineOutpatient(hospitalClaim,hospitalClaimDetails);
 				for(ViolationDetail violationDetail : violationDetails){
@@ -182,12 +185,12 @@ public class RuleEngineController extends BaseController {
 				respInfo.setResultMsg("业务数据逻辑处理异常");
 				respInfo.setResultStatus("F");
 			}
-		//判断就医方式是住院
-		}else if(medTreatmentMode.equals("21") || 
-				medTreatmentMode.equals("22") || 
-				medTreatmentMode.equals("25") || 
-				medTreatmentMode.equals("52") || 
-				medTreatmentMode.equals("72")){ 
+			//判断就医方式是住院
+		}else if(medTreatmentMode.equals("21") ||
+				medTreatmentMode.equals("22") ||
+				medTreatmentMode.equals("25") ||
+				medTreatmentMode.equals("52") ||
+				medTreatmentMode.equals("72")){
 			//保存单据信息
 //			boolean insert = true;
 			//boolean insert = hospitalClaimService.insert(hospitalClaim);
@@ -214,14 +217,17 @@ public class RuleEngineController extends BaseController {
 		}
 		returnResult.setRespInfo(respInfo);
 		returnResult.setRespData(respDatas);
+		System.out.println("----------时间49---------------"+System.currentTimeMillis());
 		ThreadPoolUtil.handleViolationDetail(hospitalClaim, hospitalClaimDetails, respDatas);
-		
+
+		System.out.println("----------时间50---------------"+System.currentTimeMillis());
+
 		//住院
-		if(medTreatmentMode.equals("21") || 
-		   medTreatmentMode.equals("22") || 
-		   medTreatmentMode.equals("25") || 
-		   medTreatmentMode.equals("52") || 
-		   medTreatmentMode.equals("72")){
+		if(medTreatmentMode.equals("21") ||
+				medTreatmentMode.equals("22") ||
+				medTreatmentMode.equals("25") ||
+				medTreatmentMode.equals("52") ||
+				medTreatmentMode.equals("72")){
 			//非出院状态
 			if(!"1".equals(liveHospStatus)){
 				ThreadPoolUtil.handleViolationCurrentDay(hospitalClaim, returnResult.getRespData());
@@ -229,21 +235,23 @@ public class RuleEngineController extends BaseController {
 		}
 		//非出院状态
 		if(!"1".equals(liveHospStatus)){
-				ThreadPoolUtil.handleViolationCache(hospitalClaim,returnResult.getRespData());
+			ThreadPoolUtil.handleViolationCache(hospitalClaim,returnResult.getRespData());
 		}
-		
+
+		System.out.println("----------时间53---------------"+System.currentTimeMillis());
 		String result = JSONObject.fromObject(returnResult).toString();
 		ThreadPoolUtil.handleViolationResult(hospitalClaim, result,uuid);
-		
+		System.out.println("----------时间55---------------"+System.currentTimeMillis());
 		ThreadPoolUtil.UseProcedures(hospitalClaim.getDiaSerialCode(), t_type);
 		//System.out.println("result================"+result);
 		//logger.error("result================"+result);
+		System.out.println("----------解析完成时间---------"+System.currentTimeMillis());
 		return result;
 		//**/
 		//return "ssss";
 	}
-	
-	
+
+
 	/**
 	 * 删除主单信息
 	 * @param jsonData
@@ -259,7 +267,7 @@ public class RuleEngineController extends BaseController {
 		if(!checkJsonData(jsonObject,returnResult)){
 			return JSONObject.fromObject(returnResult).toString();
 		}
-	
+
 		JSONObject body = (JSONObject)jsonObject.get("body");
 		JSONObject reqData = (JSONObject)body.get("reqData");
 		String claimId = reqData.getString("claimId");
@@ -276,7 +284,7 @@ public class RuleEngineController extends BaseController {
 		returnResult.setRespInfo(respInfo);
 		return JSONObject.fromObject(returnResult).toString();
 	}
-	
+
 	/**
 	 * 修改主单信息
 	 * @param jsonData
@@ -292,10 +300,10 @@ public class RuleEngineController extends BaseController {
 		if(!checkJsonData(jsonObject,returnResult)){
 			return JSONObject.fromObject(returnResult).toString();
 		}
-	
+
 		JSONObject body = (JSONObject)jsonObject.get("body");
 		JSONObject reqData = (JSONObject)body.get("reqData");
-		
+
 		//验证就诊信息数据格式
 		if(!checkClaimFormatByJsonData(reqData,returnResult)){
 			return JSONObject.fromObject(returnResult).toString();
@@ -315,7 +323,7 @@ public class RuleEngineController extends BaseController {
 		returnResult.setRespInfo(respInfo);
 		return JSONObject.fromObject(returnResult).toString();
 	}
-	
+
 	/**
 	 * 删除明细信息
 	 * @param jsonData
@@ -331,7 +339,7 @@ public class RuleEngineController extends BaseController {
 		if(!checkJsonData(jsonObject,returnResult)){
 			return JSONObject.fromObject(returnResult).toString();
 		}
-	
+
 		JSONObject body = (JSONObject)jsonObject.get("body");
 		JSONObject reqData = (JSONObject)body.get("reqData");
 		String detailId = reqData.getString("detailId");
@@ -348,7 +356,7 @@ public class RuleEngineController extends BaseController {
 		returnResult.setRespInfo(respInfo);
 		return JSONObject.fromObject(returnResult).toString();
 	}
-	
+
 	/**
 	 * 修改明细信息
 	 * @param jsonData
@@ -364,10 +372,10 @@ public class RuleEngineController extends BaseController {
 		if(!checkJsonData(jsonObject,returnResult)){
 			return JSONObject.fromObject(returnResult).toString();
 		}
-	
+
 		JSONObject body = (JSONObject)jsonObject.get("body");
 		JSONObject reqData = (JSONObject)body.get("reqData");
-		
+
 		if(!checkClaimDetailFormatByJsonData(reqData,returnResult)){
 			return JSONObject.fromObject(returnResult).toString();
 		}
@@ -385,7 +393,7 @@ public class RuleEngineController extends BaseController {
 		returnResult.setRespInfo(respInfo);
 		return JSONObject.fromObject(returnResult).toString();
 	}
-	
+
 	/**
 	 * 获取json数据中的就诊信息
 	 * @param jsonData
@@ -396,7 +404,7 @@ public class RuleEngineController extends BaseController {
 		HospitalClaim hospitalClaim = (HospitalClaim)JSONObject.toBean(hospitalClaimJson,HospitalClaim.class);
 		return hospitalClaim;
 	}
-	
+
 	/**
 	 * 获取json数据中的明细列表
 	 * @param jsonData
@@ -407,7 +415,7 @@ public class RuleEngineController extends BaseController {
 		List<HospitalClaimDetail> hospitalClaimDetailList = (List<HospitalClaimDetail>) JSONArray.toCollection(hospitalClaimDetailsJson,HospitalClaimDetail.class);
 		return hospitalClaimDetailList;
 	}
-	
+
 	/**
 	 * 获取json数据中的明细数据
 	 * @param jsonData
@@ -418,7 +426,7 @@ public class RuleEngineController extends BaseController {
 		HospitalClaimDetail hospitalClaimDetail = (HospitalClaimDetail) JSONObject.toBean(hospitalClaimDetailJson,HospitalClaimDetail.class);
 		return hospitalClaimDetail;
 	}
-	
+
 	/**
 	 * 检查上传的json 数据
 	 * @param jsonData
@@ -438,7 +446,7 @@ public class RuleEngineController extends BaseController {
 		}
 		//接收传过来的json数据对json数据进行解析
 //		JSONObject jsonObject = JSONObject.fromObject(jsonData);
-		
+
 //		JSONObject header = (JSONObject) jsonObject.get("header");
 //		if(null == header || header.isEmpty()){
 //			respInfo.setResultCode("0001");
@@ -466,11 +474,11 @@ public class RuleEngineController extends BaseController {
 		//验证认证ID
 		String certID = (String) reqData.get("certId");
 		if(!checkCertId(certID,returnResult)){
-			return false; 
+			return false;
 		}
 		return true;
 	}
-	
+
 	/**
 	 * 检查json数据中的就诊信息格式
 	 * @param reqData
@@ -487,7 +495,7 @@ public class RuleEngineController extends BaseController {
 			returnResult.setRespInfo(respInfo);
 			return false;
 		}
-		
+
 //		String outHospDate = hospitalClaimJson.getString("outHospDate");
 //		hospitalClaimJson.put("outHospDate", outHospDate);
 		//出院状态必须验证出院时间
@@ -502,7 +510,7 @@ public class RuleEngineController extends BaseController {
 		{
 			hospitalClaimJson.remove("outHospDate");
 		}
-		
+
 //		String settlementDate = hospitalClaimJson.getString("settlementDate")+" 00:00:00";
 //		hospitalClaimJson.put("settlementDate", settlementDate);
 		if(StringUtils.isEmpty(hospitalClaimJson.getString("settlementDate")))
@@ -515,7 +523,7 @@ public class RuleEngineController extends BaseController {
 				return false;
 			}
 		}
-		
+
 		//如果是删除主单信息只需要验证id
 		if("3".equals(hospitalClaimJson.getString("operationType")))
 		{
@@ -529,7 +537,7 @@ public class RuleEngineController extends BaseController {
 			}
 			return true;
 		}
-		
+
 		//验证就诊信息里面的日期格式
 //		String patBirthday = hospitalClaimJson.getString("patBirthday")+" 00:00:00";
 //		hospitalClaimJson.put("patBirthday", patBirthday);
@@ -542,8 +550,8 @@ public class RuleEngineController extends BaseController {
 			return false;
 		}
 
-		
-		
+
+
 
 		HospitalClaim hospitalClaim = (HospitalClaim)JSONObject.toBean(hospitalClaimJson,HospitalClaim.class);
 		//验证传入的就诊信息数据
@@ -552,7 +560,7 @@ public class RuleEngineController extends BaseController {
 		}
 		return true;
 	}
-	
+
 	/**
 	 * 检查json中的明细列表数据格式
 	 * @param reqData
@@ -567,7 +575,7 @@ public class RuleEngineController extends BaseController {
 		{
 			return true;
 		}
-		
+
 		//获取json数据中的明细信息
 		JSONArray claimDetailListJson = (JSONArray)reqData.get("hospitalClaimDetails");
 		if(null == claimDetailListJson || claimDetailListJson.isEmpty()){
@@ -576,8 +584,8 @@ public class RuleEngineController extends BaseController {
 //			respInfo.setResultStatus("F");
 //			returnResult.setRespInfo(respInfo);
 			return true;
-		}		
-		
+		}
+
 		//验证单据明细信息中的日期格式
 		for (int i = 0; i < claimDetailListJson.size(); i++) {
 			JSONObject object = (JSONObject)claimDetailListJson.get(i);
@@ -588,7 +596,7 @@ public class RuleEngineController extends BaseController {
 			}
 		}
 		List<HospitalClaimDetail> hospitalClaimDetails = (List<HospitalClaimDetail>) JSONArray.toCollection(claimDetailListJson,HospitalClaimDetail.class);
-		//验证传入的明细信息数据		
+		//验证传入的明细信息数据
 //		for(HospitalClaimDetail hospitalClaimDetail : hospitalClaimDetails){
 //			if(!baseCheckInputVO(hospitalClaimDetail,returnResult)){
 //				return false;
@@ -597,8 +605,8 @@ public class RuleEngineController extends BaseController {
 		return ThreadPoolUtil.baseCheckInputVOList(hospitalClaimDetails, returnResult);
 		//return true;
 	}
-	
-	
+
+
 	/**
 	 * 检查json中的明细数据
 	 * @param reqData
@@ -626,7 +634,7 @@ public class RuleEngineController extends BaseController {
 		}
 		return true;
 	}
-	
+
 	/**
 	 * 验证vo数据
 	 * @param requestVO
@@ -640,19 +648,19 @@ public class RuleEngineController extends BaseController {
 			respInfo.setResultMsg("信息不能为空！");
 			respInfo.setResultStatus("F");
 			returnResult.setRespInfo(respInfo);
-		    return false;
+			return false;
 		}
 		Set<ConstraintViolation<Object>> validResult = Validation.buildDefaultValidatorFactory().getValidator()
-		         .validate(requestVO);
+				.validate(requestVO);
 		if (null != validResult && validResult.size() > 0) {
-		    StringBuilder sb = new StringBuilder();
-		    for (Iterator<ConstraintViolation<Object>> iterator = validResult.iterator(); iterator.hasNext();) {
-		        ConstraintViolation<Object> constraintViolation = (ConstraintViolation<Object>) iterator.next();
-		         //这里只取了字段名，如果需要其他信息可以自己处理
-		        sb.append(constraintViolation.getMessage()).append("、");
-		    }
+			StringBuilder sb = new StringBuilder();
+			for (Iterator<ConstraintViolation<Object>> iterator = validResult.iterator(); iterator.hasNext();) {
+				ConstraintViolation<Object> constraintViolation = (ConstraintViolation<Object>) iterator.next();
+				//这里只取了字段名，如果需要其他信息可以自己处理
+				sb.append(constraintViolation.getMessage()).append("、");
+			}
 			if(sb.lastIndexOf("、") == sb.length()-1){
-			    sb.delete(sb.length()-1, sb.length());
+				sb.delete(sb.length()-1, sb.length());
 			}
 			RespInfo respInfo = new RespInfo();
 			respInfo.setResultCode("0001");
@@ -663,32 +671,32 @@ public class RuleEngineController extends BaseController {
 		}
 		return true;
 	}
-	
+
 	/**
 	 * 验证字符串是否是一个合法的日期格式
 	 * @param str
 	 * @return
 	 */
-	private boolean isValidDate(String str, String strVal, ReturnResult returnResult) { 
-       boolean convertSuccess=true; 
-        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss"); 
-        try {
-        	// 设置lenient为false. 否则SimpleDateFormat会比较宽松地验证日期，比如2007/02/29会被接受，并转换成2007/03/01 
-           format.setLenient(false); 
-           format.parse(strVal); 
-       } catch (ParseException e) {
-           // e.printStackTrace();
-    	   // 如果throw java.text.ParseException或者NullPointerException，就说明格式不对
-    	   	RespInfo respInfo = new RespInfo();
-    	   	respInfo.setResultCode("0001");
-    	   	respInfo.setResultMsg(str + "值无效");
-    	   	respInfo.setResultStatus("F");
+	private boolean isValidDate(String str, String strVal, ReturnResult returnResult) {
+		boolean convertSuccess=true;
+		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		try {
+			// 设置lenient为false. 否则SimpleDateFormat会比较宽松地验证日期，比如2007/02/29会被接受，并转换成2007/03/01
+			format.setLenient(false);
+			format.parse(strVal);
+		} catch (ParseException e) {
+			// e.printStackTrace();
+			// 如果throw java.text.ParseException或者NullPointerException，就说明格式不对
+			RespInfo respInfo = new RespInfo();
+			respInfo.setResultCode("0001");
+			respInfo.setResultMsg(str + "值无效");
+			respInfo.setResultStatus("F");
 			returnResult.setRespInfo(respInfo);
-           convertSuccess=false;
-        }
-        return convertSuccess;
-	 }
-	
+			convertSuccess=false;
+		}
+		return convertSuccess;
+	}
+
 	/**
 	 * 验证认证ID
 	 */

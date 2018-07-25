@@ -56,8 +56,8 @@ public class HospitalClaimServiceImpl extends ServiceImpl<HospitalClaimMapper, H
 //				{
 //					hospitalClaimDetailService.insert(hospitalClaimDetail);
 //				}
-//				
-				
+//
+
 			}
 			
 			if(hospitalClaimDetails.size()==0)
@@ -106,13 +106,13 @@ public class HospitalClaimServiceImpl extends ServiceImpl<HospitalClaimMapper, H
 						
 					}
 				});
-				
+
 //				hospitalClaimDetailService.insertBatch(hospitalClaimDetails.subList(startIndex, endIndex));
 			}
 			
 			while(list1.size()<hospitalClaimDetails.size());
 			
-			
+
 //			hospitalClaimDetailService.insertBatch(hospitalClaimDetails);
 		}
 		catch (Exception e) {
@@ -124,7 +124,7 @@ public class HospitalClaimServiceImpl extends ServiceImpl<HospitalClaimMapper, H
 		{
 			return false;
 		}
-		
+
 		return true;
 	}
 	

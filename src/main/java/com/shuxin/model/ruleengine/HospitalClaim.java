@@ -1,20 +1,18 @@
 package com.shuxin.model.ruleengine;
 
-import java.io.Serializable;
-import java.math.BigDecimal;
-import java.util.Date;
+import com.baomidou.mybatisplus.annotations.TableField;
+import com.baomidou.mybatisplus.annotations.TableName;
+import com.shuxin.commons.utils.StringUtils;
+import org.hibernate.validator.constraints.NotEmpty;
+import org.hibernate.validator.constraints.Range;
 
 import javax.validation.constraints.Digits;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Past;
-
-import org.hibernate.validator.constraints.NotEmpty;
-import org.hibernate.validator.constraints.Range;
-
-import com.baomidou.mybatisplus.annotations.TableField;
-import com.baomidou.mybatisplus.annotations.TableName;
-import com.shuxin.commons.utils.StringUtils;
+import java.io.Serializable;
+import java.math.BigDecimal;
+import java.util.Date;
 
 @TableName("T_PATIENT_INFORMATION")
 public class HospitalClaim implements Serializable  {
@@ -190,7 +188,7 @@ public class HospitalClaim implements Serializable  {
 	//病案号
 	@TableField(value = "medRecordCode")
 	private String medRecordCode;
-	//住院状态
+	//住院状态（已出院1、未出院0，门诊-1，根据是否已经出院结算做判断）
 	@Range(min=-1, max=1, message="liveHospStatus值无效")
 	@TableField(value = "liveHospStatus")
 	private String liveHospStatus;
